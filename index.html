@@ -2538,6 +2538,7 @@
     </header>
     <div class="wrap" id="view"></div>
   </section>
+  <script src="dados_reais.js"></script>
   <script>
     /* ===== CONFIGURAÇÃO: cole aqui a URL do App da Web (termina em /exec) ===== */
     const API_URL = "https://script.google.com/macros/s/AKfycbxXJGcXCvjIq1S9Ac801VFfwBNk-uFu_ck5Wgr3SEXmXtKRrAheWj6dj9sjEywLG_-k/exec";
@@ -2614,10 +2615,15 @@
       if (cached) {
         const r = JSON.parse(cached);
         if (r && r.data) {
-          D = Object.assign(vazio(), r.data);
+          const isDummy = !r.data.schools || r.data.schools.length <= 3 || (r.data.students && r.data.students.some(s => s.name && s.name.startsWith("Aluno ")));
+          if (isDummy && typeof DADOS_REAIS !== "undefined") {
+            D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
+          } else {
+            D = Object.assign(vazio(), r.data);
+          }
           normalizarTurmas(D.classes);
           normalizarAlunos(D.students, D.classes);
-      if (r.role == "admin") {
+          if (r.role == "admin") {
             S.user = { role: "admin" };
             S.tab = "resumo";
             S.yr = D.cur;
@@ -2628,6 +2634,10 @@
             S.pid = D.periods.filter(p => p.open && p.yid == D.cur)[0]?.id || null;
           }
         }
+      } else if (typeof DADOS_REAIS !== "undefined") {
+        D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
+        normalizarTurmas(D.classes);
+        normalizarAlunos(D.students, D.classes);
       }
     } catch (e) { }
 
@@ -2708,7 +2718,27 @@
       try { localStorage.setItem(CK, JSON.stringify({ data: r.data, role: r.role, name: r.name, token: TOK })) } catch (e) { }
       if (S.user && S.user.role == "admin") { setTimeout(garantirEscolasRede, 100); }
     }
-    const ESCOLAS_CANOA = [];
+    const ESCOLAS_CANOA = [
+      "ESCOLA DEP. MANOEL PEREIRA FILHO",
+      "ESCOLA DEP. JOSÉ LÚCIO DE MELO",
+      "ESCOLA NOSSA SENHORA APARECIDA",
+      "ESCOLA PRES. GARRASTAZU MÉDICI",
+      "ESCOLA VER. JOSÉ BEZERRA LEITE",
+      "ESCOLA JOÃO ANGELINO DOS SANTOS",
+      "ESCOLA JOSÉ BERNARDES NETO",
+      "ESCOLA DOM PEDRO II",
+      "ESCOLA JOSÉ FRANCISCO DE BRITO",
+      "ESCOLA JOSÉ JOVINO DA SILVA",
+      "ESCOLA JOSÉ ROCHA DOS SANTOS",
+      "ESCOLA PROF. MURILO ROCHA MENDES",
+      "ESCOLA ULISSES LOPES DE OLIVEIRA",
+      "ESCOLA FUND. HERMETO PASCOAL",
+      "ESCOLA LUIZ EUSTÁQUIO TOLEDO",
+      "ESCOLA PROF. JOSÉ MOACIR TEÓFILO",
+      "ESCOLA DEP. JOSÉ MARQUES DA SILVA",
+      "ESCOLA DOM PEDRO I",
+      "ESCOLA GOV. DIVALDO SURUAGY"
+    ];
     let _garantindo = false;
     async function garantirEscolasRede() {
       if (_garantindo || !S.user || S.user.role !== "admin" || !TOK) return;
@@ -2793,12 +2823,34 @@
       if (sess !== currentSessionId || !TOK || !S.user) return false;
       adopt(r); render(); return true;
     }
-    async function carregarExemplo(btn) {
-      if (btn) { btn.disabled = true; btn.textContent = "Gravando dados na planilha…" }
-      const r = await api({ a: "exemplo", token: TOK });
-      if (r.ok) { await recarregar(true) }
-      else { alert(r.err || "Erro ao carregar dados de exemplo."); if (btn) { btn.disabled = false; btn.textContent = "⚡ Inserir dados de teste na planilha" } }
+    async function carregarDadosReais(btn) {
+      if (!confirm("Tem certeza que deseja limpar o banco de testes atual e carregar os DADOS REAIS da rede municipal de Lagoa da Canoa?\n\nIsso irá registrar as 19 Escolas, 67 Turmas (Regulares e Multiano), 1.332 Alunos e as avaliações reais de Entrada, 1º e 2º Bimestres.")) return;
+      if (btn) { btn.disabled = true; btn.textContent = "Gravando dados reais na planilha…"; }
+      if (typeof DADOS_REAIS !== "undefined") {
+        D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
+        normalizarTurmas(D.classes);
+        normalizarAlunos(D.students, D.classes);
+        if (!D.cur && D.years && D.years[0]) D.cur = D.years[0].id;
+        try {
+          localStorage.setItem(CK, JSON.stringify({ data: D, role: S.user ? S.user.role : "admin", name: S.user ? S.user.name : "Administrador", token: TOK }));
+        } catch (e) { }
+        render();
+      }
+      const r = await api({ a: "dados_reais", token: TOK });
+      if (r.ok) {
+        await recarregar(true);
+        alert("Sucesso! Banco de dados limpo e carregado com os dados reais da rede municipal de Lagoa da Canoa:\n\n• 19 Escolas Municipais\n• 67 Turmas (42 Regulares e 25 Multiano)\n• 1.332 Alunos\n• Diagnóstico real: Entrada, 1º e 2º Bimestre.");
+      } else {
+        if (typeof DADOS_REAIS !== "undefined") {
+          alert("Dados reais carregados localmente com sucesso! (" + (r.err || "Aguardando sincronização com a planilha") + ")");
+        } else {
+          alert(r.err || "Erro ao conectar com a planilha.");
+        }
+      }
+      if (btn) { btn.disabled = false; btn.textContent = "⚡ Limpar Banco e Carregar Dados Reais"; }
+      render();
     }
+    const carregarExemplo = carregarDadosReais;
     async function restaurar() {
       const sess = currentSessionId;
       const b = $("#go");
@@ -3290,7 +3342,10 @@
             <h3 style="margin:0 0 4px;color:var(--gd)">Cadastrar Escolas Municipais da Rede</h3>
             <p style="margin:0;font-size:.85rem;color:var(--ink)">Existem <b>${faltam.length}</b> escola(s) da rede municipal de Lagoa da Canoa prontas para serem cadastradas na planilha com todas as etapas vinculadas.</p>
           </div>
-          <button class="btn" onclick="cadastrarEscolasRede(this)">⚡ Cadastrar ${faltam.length} escolas da rede</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" onclick="cadastrarEscolasRede(this)">⚡ Cadastrar ${faltam.length} escolas da rede</button>
+            <button class="btn" style="background:#0F5132;border-color:#0F5132" onclick="carregarDadosReais(this)">⚡ Carregar Todas as Turmas e Alunos Reais</button>
+          </div>
         </div>
       </div>` : "";
       return bannerRede + addBox("Cadastrar escola individual", `<label>Nome da escola</label><input id="ne"><label style="margin-top:14px">Anos escolares que a escola oferece</label><div class="chk">${chkL([], "ns")}</div><div id="se"></div>`, `<button class="btn" onclick="addEscola()">Adicionar escola</button>`) + `<div class="card"><h3>Escolas cadastradas</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">Marque os <b>anos escolares</b> que cada escola oferece. Só eles poderão ser usadas ao criar turmas.</p>${D.schools.map(s => `<div class="row" style="align-items:flex-start"><div style="flex:1 1 260px"><input value="${esc(s.name)}" aria-label="Nome da escola" style="font-weight:700;height:40px" onchange="ren('schools','${s.id}',this.value);render()"><br><small>${(n => n + (n == 1 ? " turma" : " turmas") + " em " + esc(yname(D.cur)))(D.classes.filter(c => c.sid == s.id && c.yid == D.cur).length)}</small><div class="chk" style="margin-top:8px">${D.levels.map(l => `<label><input type="checkbox" ${s.lids.includes(l.id) ? "checked" : ""} onchange="togSL('${s.id}','${l.id}',this)">${esc(l.name)}</label>`).join("")}</div></div><button class="dan" onclick="del('school','${s.id}')">Excluir</button></div>`).join("") || '<p class="empty">Nenhuma escola.</p>'}</div>` }
@@ -3451,7 +3506,16 @@
     function setCur(id) { D.cur = id; commit([{ t: "cur", id }]); render() }
     function aAnos() {
       const nx = String((Math.max(0, ...D.years.map(y => parseInt(y.name) || 0)) || new Date().getFullYear() - 1) + 1);
-      return addBox("Criar ano letivo", `<div class="grid"><div><label>Ano letivo</label><input id="yn" placeholder="Ex.: 2027" value="${nx}"></div><div><label>Copiar de</label><select id="yf"><option value="">Começar vazio</option>${D.years.map(y => `<option value="${y.id}" ${y.id == yr() ? "selected" : ""}>${esc(y.name)}</option>`).join("")}</select></div></div><div class="chk" style="margin-top:14px"><label><input type="checkbox" id="yc" checked>Copiar as turmas (sem nenhum preenchimento)</label><label><input type="checkbox" id="yp" checked>Copiar os períodos (só o 1º começa aberto)</label><label><input type="checkbox" id="yv" checked>Definir como ano vigente</label></div><div id="ye"></div>`, `<button class="btn" onclick="addAno()">Criar ano letivo</button>`) + `<div class="card"><h3>Anos letivos (${D.years.length})</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">O <b>ano vigente</b> é o que os coordenadores veem e preenchem. Turmas, períodos e preenchimentos pertencem a cada ano; escolas, etapas, coordenadores e indicadores valem para todos.</p>${D.years.map(y => `<div class="row"><input value="${esc(y.name)}" aria-label="Nome do ano letivo" onchange="ren('years','${y.id}',this.value);render()"><small>${yCl(y.id).length} turmas · ${yPer(y.id).length} períodos</small>${y.id == D.cur ? '<span class="badge" style="margin:0">● Vigente</span>' : `<button class="ghost" style="height:34px;padding:0 12px" onclick="setCur('${y.id}')">Definir como vigente</button>`}<button class="dan" onclick="del('year','${y.id}')">Excluir</button></div>`).join("")}</div>`
+      const bannerReais = `<div class="card" style="border:1.5px solid var(--g);background:var(--gs);margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+          <div>
+            <h3 style="margin:0 0 4px;color:var(--gd)">⚡ Base de Dados Real · SEMED Lagoa da Canoa</h3>
+            <p style="margin:0;font-size:.85rem;color:var(--ink)">Limpar banco de testes e preencher com os relatórios oficiais: <b>19 escolas municipais</b>, <b>67 turmas (42 regulares e 25 multiano)</b>, <b>1.332 alunos</b> e diagnósticos reais de Entrada, 1º e 2º Bimestres.</p>
+          </div>
+          <button class="btn" style="background:#0F5132;border-color:#0F5132;white-space:nowrap" onclick="carregarDadosReais(this)">⚡ Limpar Banco e Carregar Dados Reais</button>
+        </div>
+      </div>`;
+      return bannerReais + addBox("Criar ano letivo", `<div class="grid"><div><label>Ano letivo</label><input id="yn" placeholder="Ex.: 2027" value="${nx}"></div><div><label>Copiar de</label><select id="yf"><option value="">Começar vazio</option>${D.years.map(y => `<option value="${y.id}" ${y.id == yr() ? "selected" : ""}>${esc(y.name)}</option>`).join("")}</select></div></div><div class="chk" style="margin-top:14px"><label><input type="checkbox" id="yc" checked>Copiar as turmas (sem nenhum preenchimento)</label><label><input type="checkbox" id="yp" checked>Copiar os períodos (só o 1º começa aberto)</label><label><input type="checkbox" id="yv" checked>Definir como ano vigente</label></div><div id="ye"></div>`, `<button class="btn" onclick="addAno()">Criar ano letivo</button>`) + `<div class="card"><h3>Anos letivos (${D.years.length})</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">O <b>ano vigente</b> é o que os coordenadores veem e preenchem. Turmas, períodos e preenchimentos pertencem a cada ano; escolas, etapas, coordenadores e indicadores valem para todos.</p>${D.years.map(y => `<div class="row"><input value="${esc(y.name)}" aria-label="Nome do ano letivo" onchange="ren('years','${y.id}',this.value);render()"><small>${yCl(y.id).length} turmas · ${yPer(y.id).length} períodos</small>${y.id == D.cur ? '<span class="badge" style="margin:0">● Vigente</span>' : `<button class="ghost" style="height:34px;padding:0 12px" onclick="setCur('${y.id}')">Definir como vigente</button>`}<button class="dan" onclick="del('year','${y.id}')">Excluir</button></div>`).join("")}</div>`
     }
     function addAno() {
       const n = val("yn"), f = $("#yf").value, m = t => $("#ye").innerHTML = `<div class="err">${t}</div>`;
