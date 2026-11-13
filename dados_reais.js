@@ -1,7 +1,7 @@
-// DADOS REAIS — Monitoramento Ensino Fundamental I — SEMED Lagoa da Canoa
-// Gerado automaticamente de periodo_data_raw.json + correções manuais
-// Fonte: PDFs oficiais (Entrada.pdf, 1° Bimestre.pdf, 2° Bimestre.pdf)
-// NÃO EDITAR MANUALMENTE
+// DADOS REAIS â€” Monitoramento Ensino Fundamental I â€” SEMED Lagoa da Canoa
+// Gerado automaticamente de periodo_data_raw.json + correÃ§Ãµes manuais
+// Fonte: PDFs oficiais (Entrada.pdf, 1Â° Bimestre.pdf, 2Â° Bimestre.pdf)
+// NÃƒO EDITAR MANUALMENTE
 
 const DADOS_REAIS = {
   "years": [
@@ -114,7 +114,7 @@ const DADOS_REAIS = {
   "classes": [
     {
       "id": "c1",
-      "eid": "e4",
+      "sid": "e4",
       "yid": "y1",
       "lid": "l3",
       "name": "M. APARECIDA - 3º Ano",
@@ -122,7 +122,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c2",
-      "eid": "e4",
+      "sid": "e4",
       "yid": "y1",
       "lid": "l2",
       "name": "M. EDJANE - 2º Ano",
@@ -130,7 +130,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c3",
-      "eid": "e4",
+      "sid": "e4",
       "yid": "y1",
       "lid": "multi",
       "name": "NÁDIA (4º e 5º)",
@@ -138,7 +138,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c4",
-      "eid": "e4",
+      "sid": "e4",
       "yid": "y1",
       "lid": "multi",
       "name": "TAINARA (1º e 2º)",
@@ -146,7 +146,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c5",
-      "eid": "e13",
+      "sid": "e13",
       "yid": "y1",
       "lid": "l2",
       "name": "CAROLINE - 2º Ano",
@@ -154,7 +154,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c6",
-      "eid": "e13",
+      "sid": "e13",
       "yid": "y1",
       "lid": "l2",
       "name": "DAIANE - 2º Ano",
@@ -162,7 +162,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c7",
-      "eid": "e13",
+      "sid": "e13",
       "yid": "y1",
       "lid": "l4",
       "name": "IZAEL - 4º Ano",
@@ -170,7 +170,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c8",
-      "eid": "e13",
+      "sid": "e13",
       "yid": "y1",
       "lid": "l1",
       "name": "MARIANA - 1º Ano",
@@ -178,7 +178,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c9",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l2",
       "name": "ANDRESA - 2º Ano",
@@ -186,7 +186,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c10",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l1",
       "name": "ANDRESSA - 1º Ano",
@@ -194,7 +194,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c11",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l5",
       "name": "CLAUDENE - 5º Ano",
@@ -202,7 +202,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c12",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l3",
       "name": "ELIANE - 3º Ano",
@@ -210,7 +210,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c13",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l1",
       "name": "ELISSANDRA 1º - 1º Ano",
@@ -218,7 +218,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c14",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l2",
       "name": "ELISSANDRA 2º - 2º Ano",
@@ -226,7 +226,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c15",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l4",
       "name": "IRIS - 4º Ano",
@@ -234,7 +234,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c16",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l5",
       "name": "JAQUELINE - 5º Ano",
@@ -242,7 +242,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c17",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l5",
       "name": "KAYLLA - 5º Ano",
@@ -250,7 +250,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c18",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l4",
       "name": "LEILA - 4º Ano",
@@ -258,7 +258,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c19",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l5",
       "name": "LIDIANE - 5º Ano",
@@ -266,7 +266,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c20",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "multi",
       "name": "LUCIANA (4º e 5º)",
@@ -274,7 +274,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c21",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l2",
       "name": "LUCILÉIA - 2º Ano",
@@ -282,7 +282,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c22",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l2",
       "name": "M. JAMILY - 2º Ano",
@@ -290,7 +290,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c23",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l3",
       "name": "M. LARISSA - 3º Ano",
@@ -298,7 +298,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c24",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l1",
       "name": "MARAISA - 1º Ano",
@@ -306,7 +306,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c25",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l3",
       "name": "MARTA - 3º Ano",
@@ -314,7 +314,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c26",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l4",
       "name": "SIDIANE - 4º Ano",
@@ -322,7 +322,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c27",
-      "eid": "e1",
+      "sid": "e1",
       "yid": "y1",
       "lid": "l3",
       "name": "VALQUIRIA - 3º Ano",
@@ -330,7 +330,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c28",
-      "eid": "e14",
+      "sid": "e14",
       "yid": "y1",
       "lid": "l1",
       "name": "ALINE - 1º Ano",
@@ -338,7 +338,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c29",
-      "eid": "e14",
+      "sid": "e14",
       "yid": "y1",
       "lid": "l5",
       "name": "RANILA - 5º Ano",
@@ -346,7 +346,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c30",
-      "eid": "e14",
+      "sid": "e14",
       "yid": "y1",
       "lid": "l3",
       "name": "SUELY - 3º Ano",
@@ -354,7 +354,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c31",
-      "eid": "e15",
+      "sid": "e15",
       "yid": "y1",
       "lid": "multi",
       "name": "LUANA (1º e 2º e 3º e 4º e 5º)",
@@ -362,7 +362,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c32",
-      "eid": "e10",
+      "sid": "e10",
       "yid": "y1",
       "lid": "l1",
       "name": "MARIA - 1º Ano",
@@ -370,7 +370,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c33",
-      "eid": "e16",
+      "sid": "e16",
       "yid": "y1",
       "lid": "l4",
       "name": "DERLAINE - 4º Ano",
@@ -378,7 +378,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c34",
-      "eid": "e16",
+      "sid": "e16",
       "yid": "y1",
       "lid": "l1",
       "name": "LARISSA - 1º Ano",
@@ -386,7 +386,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c35",
-      "eid": "e16",
+      "sid": "e16",
       "yid": "y1",
       "lid": "l2",
       "name": "M. MAIARA - 2º Ano",
@@ -394,7 +394,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c36",
-      "eid": "e7",
+      "sid": "e7",
       "yid": "y1",
       "lid": "l1",
       "name": "LUANA - 1º Ano",
@@ -402,7 +402,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c37",
-      "eid": "e7",
+      "sid": "e7",
       "yid": "y1",
       "lid": "multi",
       "name": "MARIA DAS DORES (3º e 4º e 5º)",
@@ -410,7 +410,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c38",
-      "eid": "e7",
+      "sid": "e7",
       "yid": "y1",
       "lid": "multi",
       "name": "NADIEJE (1º e 2º)",
@@ -418,7 +418,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c39",
-      "eid": "e17",
+      "sid": "e17",
       "yid": "y1",
       "lid": "l1",
       "name": "RADYMILLA - 1º Ano",
@@ -426,7 +426,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c40",
-      "eid": "e18",
+      "sid": "e18",
       "yid": "y1",
       "lid": "l1",
       "name": "MARCIA - 1º Ano",
@@ -434,7 +434,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c41",
-      "eid": "e19",
+      "sid": "e19",
       "yid": "y1",
       "lid": "l1",
       "name": "FRANCIELE - 1º Ano",
@@ -442,7 +442,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c42",
-      "eid": "e6",
+      "sid": "e6",
       "yid": "y1",
       "lid": "l4",
       "name": "CARINE - 4º Ano",
@@ -450,7 +450,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c43",
-      "eid": "e6",
+      "sid": "e6",
       "yid": "y1",
       "lid": "l1",
       "name": "JULIANA - 1º Ano",
@@ -458,7 +458,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c44",
-      "eid": "e6",
+      "sid": "e6",
       "yid": "y1",
       "lid": "l3",
       "name": "SUILA - 3º Ano",
@@ -466,7 +466,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c45",
-      "eid": "e6",
+      "sid": "e6",
       "yid": "y1",
       "lid": "l5",
       "name": "VANDERLY - 5º Ano",
@@ -474,7 +474,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c46",
-      "eid": "e6",
+      "sid": "e6",
       "yid": "y1",
       "lid": "l2",
       "name": "VIVIANE - 2º Ano",
@@ -482,7 +482,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c47",
-      "eid": "e11",
+      "sid": "e11",
       "yid": "y1",
       "lid": "l1",
       "name": "M. VANDERLEIA - 1º Ano",
@@ -490,7 +490,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c48",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l5",
       "name": "ANA PAULA - 5º Ano",
@@ -498,7 +498,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c49",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l2",
       "name": "CLEDJA - 2º Ano",
@@ -506,7 +506,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c50",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l3",
       "name": "EBERSON - 3º Ano",
@@ -514,7 +514,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c51",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l2",
       "name": "JAQUELINE - 2º Ano",
@@ -522,7 +522,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c52",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l3",
       "name": "M. LÚCIA - 3º Ano",
@@ -530,7 +530,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c53",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l1",
       "name": "MAIARA - 1º Ano",
@@ -538,7 +538,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c54",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l1",
       "name": "MARTTA - 1º Ano",
@@ -546,7 +546,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c55",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "l4",
       "name": "RICASSIA - 4º Ano",
@@ -554,7 +554,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c56",
-      "eid": "e2",
+      "sid": "e2",
       "yid": "y1",
       "lid": "multi",
       "name": "SAMUEL (4º e 5º)",
@@ -562,7 +562,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c57",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l5",
       "name": "ANA PAULA - 5º Ano",
@@ -570,7 +570,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c58",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l1",
       "name": "ANDREZA - 1º Ano",
@@ -578,7 +578,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c59",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l3",
       "name": "CLAUDENE - 3º Ano",
@@ -586,7 +586,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c60",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l3",
       "name": "LIDIANE - 3º Ano",
@@ -594,7 +594,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c61",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l4",
       "name": "ROBINSON - 4º Ano",
@@ -602,7 +602,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c62",
-      "eid": "e3",
+      "sid": "e3",
       "yid": "y1",
       "lid": "l2",
       "name": "VITORIA - 2º Ano",
@@ -610,7 +610,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c63",
-      "eid": "e12",
+      "sid": "e12",
       "yid": "y1",
       "lid": "l3",
       "name": "CRISTIANA - 3º Ano",
@@ -618,7 +618,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c64",
-      "eid": "e12",
+      "sid": "e12",
       "yid": "y1",
       "lid": "l1",
       "name": "JADIANA - 1º Ano",
@@ -626,7 +626,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c65",
-      "eid": "e8",
+      "sid": "e8",
       "yid": "y1",
       "lid": "l1",
       "name": "HELOIZA - 1º Ano",
@@ -634,7 +634,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c66",
-      "eid": "e8",
+      "sid": "e8",
       "yid": "y1",
       "lid": "l3",
       "name": "RAFAELA - 3º Ano",
@@ -642,7 +642,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c67",
-      "eid": "e9",
+      "sid": "e9",
       "yid": "y1",
       "lid": "l1",
       "name": "IZABELY - 1º Ano",
@@ -650,7 +650,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c68",
-      "eid": "e9",
+      "sid": "e9",
       "yid": "y1",
       "lid": "l4",
       "name": "JOSÉ MARIA - 4º Ano",
@@ -658,7 +658,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c69",
-      "eid": "e9",
+      "sid": "e9",
       "yid": "y1",
       "lid": "l2",
       "name": "SILVANIA - 2º Ano",
@@ -666,7 +666,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c70",
-      "eid": "e9",
+      "sid": "e9",
       "yid": "y1",
       "lid": "multi",
       "name": "ULISSES_MULTI (3º e 5º)",
@@ -674,7 +674,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c71",
-      "eid": "e5",
+      "sid": "e5",
       "yid": "y1",
       "lid": "l2",
       "name": "CLÁUDIA - 2º Ano",
@@ -682,7 +682,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c72",
-      "eid": "e5",
+      "sid": "e5",
       "yid": "y1",
       "lid": "multi",
       "name": "ELIANA (3º e 4º)",
@@ -690,7 +690,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c73",
-      "eid": "e5",
+      "sid": "e5",
       "yid": "y1",
       "lid": "l5",
       "name": "MICHAEL - 5º Ano",
@@ -698,7 +698,7 @@ const DADOS_REAIS = {
     },
     {
       "id": "c74",
-      "eid": "e5",
+      "sid": "e5",
       "yid": "y1",
       "lid": "l1",
       "name": "TANIELLY - 1º Ano",
