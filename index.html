@@ -1720,6 +1720,110 @@
       font-size: .76rem;
       font-weight: 400;
     }
+    .po {
+      display: none;
+    }
+    /* Estilos do Cabecalho Oficial */
+    .print-official-header {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .poh-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 6px;
+    }
+    .poh-logo {
+      flex: 0 0 auto;
+    }
+    .poh-logo img {
+      height: 54px;
+      width: auto;
+      display: block;
+    }
+    .poh-divider {
+      width: 1.5px;
+      height: 48px;
+      background-color: #0e3023;
+      flex: 0 0 1.5px;
+    }
+    .poh-text {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .poh-sub {
+      font-size: 8pt;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: 0.03em;
+      line-height: 1.22;
+      text-transform: uppercase;
+    }
+    .poh-main {
+      font-size: 11.5pt;
+      font-weight: 900;
+      color: #000;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+      text-transform: uppercase;
+      margin: 1px 0;
+    }
+    .poh-badge {
+      flex: 0 0 auto;
+      text-align: right;
+      font-size: 8pt;
+      font-weight: 700;
+      color: #2F7D5B;
+      background: #eaf5f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #c2e2d3;
+      text-transform: uppercase;
+    }
+    .poh-stripe {
+      display: flex;
+      width: 100%;
+      height: 3.5px;
+      margin-top: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .poh-stripe .poh-g {
+      background: #2F7D5B;
+      flex: 32;
+      height: 100%;
+    }
+    .poh-stripe .poh-o {
+      background: #F47B20;
+      flex: 34;
+      height: 100%;
+    }
+    .poh-stripe .poh-p {
+      background: #E6007E;
+      flex: 34;
+      height: 100%;
+    }
+    .print-doc-title {
+      text-align: center;
+      margin: 8px 0 14px;
+    }
+    .print-doc-title h2 {
+      margin: 0;
+      font-size: 12.5pt;
+      font-weight: 900;
+      letter-spacing: .02em;
+      color: #153B2E;
+      text-transform: uppercase;
+    }
+    .print-doc-title p {
+      margin: 3px 0 0;
+      font-size: 8pt;
+      color: #555;
+      font-weight: 600;
+    }
     .col-sep {
       border-right: 2px solid #CBD5E1 !important;
     }
@@ -1835,36 +1939,285 @@
     }
 
     @media print {
-      @page { size: A4 landscape; margin: 8mm }
-      .po {
-        display: block !important;
-        margin: 0 0 10px;
-        font-size: 9.5pt;
-        border-bottom: 2.5px solid #2F7D5B;
-        padding-bottom: 6px;
-        color: #173F31;
+      @page {
+        size: A4 landscape;
+        margin: 8mm 10mm 8mm 10mm;
       }
-      .top, .band, .noprint, .tabs, .yrbar, .sticky-save-bar {
+
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body, html {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 8pt !important;
+      }
+
+      .noprint, .top, .band, .tabs, .yrbar, .sticky-save-bar, button, #rf, #out {
         display: none !important;
       }
-      .dg {
-        box-shadow: none !important;
-        border: 1px solid #ccc !important;
+
+      .wrap {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Cabecalho oficial aparece com destaque na impressao */
+      .po {
+        display: block !important;
+        margin: 0 0 14px 0 !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
-        margin-bottom: 12px !important;
-        padding: 8px !important;
       }
-      .dg table {
+
+      .print-official-header {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .poh-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        padding-bottom: 6px !important;
+      }
+      .poh-logo {
+        flex: 0 0 auto !important;
+      }
+      .poh-logo img {
+        height: 52px !important;
+        width: auto !important;
+        display: block !important;
+      }
+      .poh-divider {
+        width: 1.5px !important;
+        height: 46px !important;
+        background-color: #0e3023 !important;
+        flex: 0 0 1.5px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .poh-text {
+        flex: 1 1 auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+      .poh-sub {
         font-size: 7.5pt !important;
+        font-weight: 700 !important;
+        color: #111 !important;
+        letter-spacing: 0.03em !important;
+        line-height: 1.2 !important;
+        text-transform: uppercase !important;
+      }
+      .poh-main {
+        font-size: 11pt !important;
+        font-weight: 900 !important;
+        color: #000 !important;
+        letter-spacing: 0.02em !important;
+        line-height: 1.2 !important;
+        text-transform: uppercase !important;
+        margin: 1px 0 !important;
+      }
+      .poh-badge {
+        flex: 0 0 auto !important;
+        text-align: right !important;
+        font-size: 8pt !important;
+        font-weight: 700 !important;
+        color: #2F7D5B !important;
+        background: #eaf5f0 !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        border: 1px solid #c2e2d3 !important;
+        text-transform: uppercase !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .poh-stripe {
+        display: flex !important;
+        width: 100% !important;
+        height: 3.5px !important;
+        margin-top: 4px !important;
+        border-radius: 2px !important;
+        overflow: hidden !important;
+      }
+      .poh-stripe .poh-g {
+        background: #2F7D5B !important;
+        flex: 32 !important;
+        height: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .poh-stripe .poh-o {
+        background: #F47B20 !important;
+        flex: 34 !important;
+        height: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .poh-stripe .poh-p {
+        background: #E6007E !important;
+        flex: 34 !important;
+        height: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .print-doc-title {
+        text-align: center !important;
+        margin: 6px 0 10px !important;
+      }
+      .print-doc-title h2 {
+        margin: 0 !important;
+        font-size: 11.5pt !important;
+        font-weight: 900 !important;
+        letter-spacing: .02em !important;
+        color: #153B2E !important;
+        text-transform: uppercase !important;
+      }
+      .print-doc-title p {
+        margin: 2px 0 0 !important;
+        font-size: 7.8pt !important;
+        color: #555 !important;
+        font-weight: 600 !important;
+      }
+
+      /* Card da escola na impressao */
+      .dg {
+        box-shadow: none !important;
+        border: 1px solid #CBD5E1 !important;
+        border-radius: 6px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 14px !important;
+        padding: 8px 10px !important;
+        background: #ffffff !important;
+      }
+
+      .dg-header {
+        border-bottom: 1px solid #CBD5E1 !important;
+        padding-bottom: 5px !important;
+        margin-bottom: 6px !important;
+      }
+      .dg-chip {
+        font-size: 7pt !important;
+        padding: 2px 6px !important;
+        border: 1px solid #CBD5E1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .dg-chip-escrita {
+        background: #FFF7ED !important;
+        color: #9A3412 !important;
+        border-color: #FED7AA !important;
+      }
+      .dg-chip-leitura {
+        background: #F0FDF4 !important;
+        color: #166534 !important;
+        border-color: #BBF7D0 !important;
+      }
+
+      /* Tabela na impressao */
+      .dg table {
+        font-size: 7.2pt !important;
+        width: 100% !important;
         min-width: 0 !important;
+        border-collapse: collapse !important;
       }
       .dg th, .dg td {
         padding: 3px 2px !important;
+        border: 1px solid #CBD5E1 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
       }
-      .dg th.we { background: #FFEBDA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
-      .dg th.wl, .dg tr.tot td { background: #E4F2EA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
-      .bar i { -webkit-print-color-adjust: exact; print-color-adjust: exact }
+      .dg th {
+        font-size: 6.8pt !important;
+        font-weight: 700 !important;
+      }
+      .dg td:first-child {
+        text-align: left !important;
+        padding-left: 6px !important;
+        white-space: nowrap !important;
+        max-width: 130px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+
+      /* Garante que Turma, Ano, Turno e Alunos nunca quebrem em 2 linhas */
+      .dg td:nth-child(2), .dg th:nth-child(2) {
+        white-space: nowrap !important;
+        min-width: 44px !important;
+        font-weight: 700 !important;
+      }
+      .dg td:nth-child(3), .dg th:nth-child(3) {
+        white-space: nowrap !important;
+        min-width: 48px !important;
+      }
+      .dg td:nth-child(4), .dg th:nth-child(4) {
+        white-space: nowrap !important;
+        min-width: 58px !important;
+      }
+      .dg td:nth-child(5), .dg th:nth-child(5) {
+        white-space: nowrap !important;
+        min-width: 38px !important;
+      }
+
+      .dg th.we {
+        background: #FFF3EB !important;
+        color: #9A3412 !important;
+        font-weight: 800 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .dg th.wl {
+        background: #F0FDF4 !important;
+        color: #166534 !important;
+        font-weight: 800 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .col-pct-w {
+        background: #FFF7ED !important;
+        color: #C2410C !important;
+        font-weight: 800 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .col-pct-r {
+        background: #F0FDF4 !important;
+        color: #15803D !important;
+        font-weight: 800 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .col-sep {
+        border-right: 2px solid #94A3B8 !important;
+      }
+      .dg tr.tot td {
+        background: #E4F2EA !important;
+        color: #1F5C43 !important;
+        font-weight: 800 !important;
+        border-top: 2px solid #2F7D5B !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .val-zero {
+        color: #94A3B8 !important;
+      }
+      .val-num {
+        color: #0F172A !important;
+        font-weight: 700 !important;
+      }
+      .bar i {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
     }
 
     /* ===== INTERFACE DE LANÇAMENTO E AVALIAÇÃO · FUNDAMENTAL I ===== */
@@ -2520,7 +2873,34 @@
     const lvSel = () => `<div><label>Ano escolar</label><select onchange="go({fl:this.value})"><option value="">Todos os anos</option>${D.levels.map(l => `<option value="${l.id}" ${S.fl == l.id ? "selected" : ""}>${esc(l.name)}</option>`).join("")}</select></div>`;
     const shSel = () => `<div><label>Turno</label><select onchange="go({ft:this.value})"><option value="">Todos os turnos</option>${TURNOS.map(t => `<option value="${t}" ${S.ft == t ? "selected" : ""}>${t}</option>`).join("")}</select></div>`;
     const acoes = `<div style="display:flex;gap:8px"><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="window.print()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Imprimir / PDF</button><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="exportarCSV()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Exportar CSV</button></div>`;
-    const printHead = t => `<div class="po"><b>PREFEITURA MUNICIPAL DE LAGOA DA CANOA · SECRETARIA MUNICIPAL DE EDUCAÇÃO</b><br>${t} · Ano letivo ${esc(yname(yr()))} · Emitido em ${new Date().toLocaleDateString("pt-BR")}</div>`;
+    const printHead = (t, badge) => `<div class="po">
+      <div class="print-official-header">
+        <div class="poh-row">
+          <div class="poh-logo">
+            <img src="ldc.png" alt="Prefeitura de Lagoa da Canoa" style="height:54px;width:auto;display:block" onerror="this.onerror=null;this.src='logo.png'">
+          </div>
+          <div class="poh-divider"></div>
+          <div class="poh-text">
+            <div class="poh-sub">ESTADO DE ALAGOAS</div>
+            <div class="poh-sub">PREFEITURA MUNICIPAL DE LAGOA DA CANOA</div>
+            <div class="poh-main">SECRETARIA MUNICIPAL DE EDUCAÇÃO</div>
+            <div class="poh-sub">GERÊNCIA DE ENSINO</div>
+          </div>
+          <div class="poh-badge">
+            ${esc(badge || "ENSINO FUNDAMENTAL I")}
+          </div>
+        </div>
+        <div class="poh-stripe">
+          <div class="poh-g"></div>
+          <div class="poh-o"></div>
+          <div class="poh-p"></div>
+        </div>
+      </div>
+      <div class="print-doc-title">
+        <h2>RELATÓRIO DE MONITORAMENTO DO ENSINO FUNDAMENTAL I</h2>
+        <p>${esc(t || "Diagnóstico de Escrita e Leitura")} · Ano Letivo ${esc(yname(yr()))} · Emitido em ${new Date().toLocaleDateString("pt-BR")}</p>
+      </div>
+    </div>`;
     function exportarCSV() {
       const y = yr(), p = S.fp || ""; let csv = "\uFEFFEscola;Turma;Ano escolar;Turno;Professor(a);Aluno;Período;Escrita;Leitura\r\n";
       const q = v => '"' + String(v).replace(/"/g, '""') + '"', nm = (L, id) => (L.find(e => e[0] == id) || [0, ""])[1];
