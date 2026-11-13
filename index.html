@@ -1656,12 +1656,127 @@
   
     /* ===== ENSINO FUNDAMENTAL · DIAGNÓSTICO (planilha) ===== */
     .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px }
-    .dg table { font-size: .82rem; text-align: center }
-    .dg th, .dg td { text-align: center; padding: 7px 6px; border: 1px solid var(--ln) }
-    .dg td:first-child, .dg td:nth-child(2) { text-align: left }
-    .dg th.we { background: var(--os); color: #8A4A0B } .dg th.wl { background: var(--gs); color: var(--gd) }
-    .dg th:not(.we):not(.wl) { background: var(--bg) }
-    .dg tr.tot td { background: var(--gs); font-weight: 800 }
+    .po { display: none }
+
+    .dg {
+      overflow: hidden;
+    }
+    .dg table {
+      width: 100%;
+      min-width: 940px;
+      font-size: .82rem;
+      text-align: center;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+    .dg th, .dg td {
+      text-align: center;
+      padding: 6px 4px;
+      border: 1px solid var(--ln);
+      vertical-align: middle;
+    }
+    .dg th {
+      font-weight: 700;
+      font-size: .72rem;
+      letter-spacing: .02em;
+    }
+    .dg td:first-child {
+      text-align: left;
+      font-weight: 600;
+      padding-left: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    .dg td:nth-child(2) {
+      font-weight: 700;
+      width: 50px;
+    }
+    .dg td:nth-child(3) {
+      font-size: .78rem;
+      width: 55px;
+      color: var(--mut);
+    }
+    .dg td:nth-child(4) {
+      font-weight: 800;
+      width: 50px;
+    }
+    .dg th.we {
+      background: #FFF3EB;
+      color: #9A4305;
+      font-weight: 800;
+    }
+    .dg th.wl {
+      background: #EBF7F0;
+      color: #1F5C43;
+      font-weight: 800;
+    }
+    .dg th:not(.we):not(.wl) {
+      background: var(--bg);
+      color: var(--mut);
+    }
+    .dg tr.tot td {
+      background: var(--gs);
+      color: var(--gd);
+      font-weight: 800;
+      border-top: 2px solid var(--g);
+    }
+    .dg tr:hover:not(.tot) td {
+      background: rgba(47, 125, 91, .03);
+    }
+
+    .tw {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--ln) transparent;
+    }
+    .tw::-webkit-scrollbar {
+      height: 6px;
+    }
+    .tw::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .tw::-webkit-scrollbar-thumb {
+      background: var(--ln);
+      border-radius: 99px;
+    }
+    .tw::-webkit-scrollbar-thumb:hover {
+      background: var(--mut);
+    }
+
+    @media print {
+      @page { size: A4 landscape; margin: 8mm }
+      .po {
+        display: block !important;
+        margin: 0 0 10px;
+        font-size: 9.5pt;
+        border-bottom: 2.5px solid #2F7D5B;
+        padding-bottom: 6px;
+        color: #173F31;
+      }
+      .top, .band, .noprint, .tabs, .yrbar, .sticky-save-bar {
+        display: none !important;
+      }
+      .dg {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 12px !important;
+        padding: 8px !important;
+      }
+      .dg table {
+        font-size: 7.5pt !important;
+        min-width: 0 !important;
+      }
+      .dg th, .dg td {
+        padding: 3px 2px !important;
+      }
+      .dg th.we { background: #FFEBDA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+      .dg th.wl, .dg tr.tot td { background: #E4F2EA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+      .bar i { -webkit-print-color-adjust: exact; print-color-adjust: exact }
+    }
 
     /* ===== INTERFACE DE LANÇAMENTO E AVALIAÇÃO · FUNDAMENTAL I ===== */
     .hero-turma {
@@ -2270,7 +2385,7 @@
     const perSel = () => `<div><label>Período</label><select onchange="go({fp:this.value})"><option value="">Todos (último registro)</option>${yPer(yr()).map(p => `<option value="${p.id}" ${S.fp == p.id ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select></div>`;
     const escSel = () => `<div><label>Escola</label><select onchange="go({fs:this.value})"><option value="">Todas as escolas</option>${D.schools.map(s => `<option value="${s.id}" ${S.fs == s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>`;
     const lvSel = () => `<div><label>Ano escolar</label><select onchange="go({fl:this.value})"><option value="">Todos os anos</option>${D.levels.map(l => `<option value="${l.id}" ${S.fl == l.id ? "selected" : ""}>${esc(l.name)}</option>`).join("")}</select></div>`;
-    const acoes = `<div style="display:flex;gap:8px"><button class="ghost" style="height:34px;font-size:.82rem" onclick="window.print()">🖨️ Imprimir / PDF</button><button class="ghost" style="height:34px;font-size:.82rem" onclick="exportarCSV()">Exportar CSV</button></div>`;
+    const acoes = `<div style="display:flex;gap:8px"><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="window.print()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Imprimir / PDF</button><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="exportarCSV()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Exportar CSV</button></div>`;
     const printHead = t => `<div class="po"><b>PREFEITURA MUNICIPAL DE LAGOA DA CANOA · SECRETARIA MUNICIPAL DE EDUCAÇÃO</b><br>${t} · Ano letivo ${esc(yname(yr()))} · Emitido em ${new Date().toLocaleDateString("pt-BR")}</div>`;
     function exportarCSV() {
       const y = yr(), p = S.fp || ""; let csv = "\uFEFFEscola;Turma;Professor(a);Ano escolar;Aluno;Período;Escrita;Leitura\r\n";
@@ -2295,7 +2410,44 @@
       const cl = D.classes.filter(c => c.sid == sid && c.yid == yr() && (!S.fl || c.lid == S.fl)).sort((a, b) => D.levels.findIndex(l => l.id == a.lid) - D.levels.findIndex(l => l.id == b.lid) || a.name.localeCompare(b.name, "pt-BR"));
       if (!cl.length) return "";
       const tot = tally(cl, pid), row = (c, t, b) => `<tr ${b ? 'class="tot"' : ""}><td style="text-align:left">${b ? "TOTAL" : esc(c.prof || "—")}</td><td>${b ? "" : esc(c.name)}</td><td>${b ? "" : esc(lname(c.lid))}</td><td><b>${t.n}</b></td>${t.w.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sw ? t.pa + "%" : "-"}</b></td>${t.r.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sr ? t.pl + "%" : "-"}</b></td></tr>`;
-      return `<div class="card dg"><h3>${esc(sc.name)}</h3><div class="tw"><table><thead><tr><th rowspan="2">Professor(a)</th><th rowspan="2">Turma</th><th rowspan="2">Ano</th><th rowspan="2">Alunos</th><th class="we" colspan="7">ESCRITA</th><th class="wl" colspan="7">LEITURA</th></tr><tr>${ESC.map(e => `<th class="we">${e[2]}</th>`).join("")}<th class="we">% Alfab.+</th>${LEI.map(e => `<th class="wl">${e[2]}</th>`).join("")}<th class="wl">% Leitor</th></tr></thead><tbody>${cl.map(c => row(c, tally([c], pid))).join("")}${row(null, tot, 1)}</tbody></table></div></div>`;
+      return `<div class="card dg">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1.5px solid var(--ln);padding-bottom:10px">
+          <h3 style="margin:0;color:var(--navy);font-size:1.05rem;display:flex;align-items:center;gap:8px">
+            <span style="display:inline-block;width:4px;height:18px;background:var(--g);border-radius:2px"></span>
+            ${esc(sc.name)}
+          </h3>
+          <div style="display:flex;gap:14px;font-size:.82rem;color:var(--mut)">
+            <span><b>${cl.length}</b> turmas</span>
+            <span><b>${tot.n}</b> alunos</span>
+            <span style="color:var(--gd)"><b>${tot.sw ? tot.pa + "%" : "-"}</b> alfabético+</span>
+            <span style="color:var(--gd)"><b>${tot.sr ? tot.pl + "%" : "-"}</b> leitores</span>
+          </div>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2" style="width:140px">Professor(a)</th>
+                <th rowspan="2" style="width:50px">Turma</th>
+                <th rowspan="2" style="width:55px">Ano</th>
+                <th rowspan="2" style="width:50px">Alunos</th>
+                <th class="we" colspan="7">ESCRITA</th>
+                <th class="wl" colspan="7">LEITURA</th>
+              </tr>
+              <tr>
+                ${ESC.map(e => `<th class="we">${e[2]}</th>`).join("")}
+                <th class="we">% Alfab.+</th>
+                ${LEI.map(e => `<th class="wl">${e[2]}</th>`).join("")}
+                <th class="wl">% Leitor</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${cl.map(c => row(c, tally([c], pid))).join("")}
+              ${row(null, tot, 1)}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
     }
     function aDiag() {
       const ss = D.schools.filter(s => !S.fs || s.id == S.fs);
