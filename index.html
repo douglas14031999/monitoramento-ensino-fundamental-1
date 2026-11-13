@@ -2591,6 +2591,10 @@
     function normalizarTurmas(classes) {
       if (!classes || !Array.isArray(classes)) return;
       classes.forEach(c => {
+        if (c.lid === "multi" || /\[Multiano\]/i.test(c.name)) {
+          c.lid = "multi";
+          c.name = (c.name || "").replace(/\s*\[Multiano\]\s*/gi, " ").trim();
+        }
         if (!c.shift && c.name) {
           const m = c.name.match(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/i);
           if (m) {
@@ -2671,8 +2675,18 @@
         }
       }
       if (k == "classes") {
+        const isMulti = c.lid === "multi" || /\[Multiano\]/i.test(c.name);
         const sh = normalizeShift(c.shift);
-        const cleanName = (c.name || "").replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+        let cleanName = (c.name || "")
+          .replace(/\s*\[Multiano\]\s*/gi, " ")
+          .replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "")
+          .trim();
+        if (isMulti) {
+          cleanName = cleanName + " [Multiano]";
+          // Fornece lid de etapa vinculada da escola para ser aceito pelo backend antigo e novo sem falhar validação
+          const school = sch(c.sid);
+          c.lid = (school && school.lids && school.lids[0]) ? school.lids[0] : (D.levels[0]?.id || "l1");
+        }
         if (sh) {
           c.name = cleanName + " [" + sh + "]";
           c.shift = sh;
@@ -3397,14 +3411,32 @@
       return items ? (items + multi) : multi;
     };
     function chgTs() { $("#tl").innerHTML = lvOpts($("#ts").value) }
-    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (!l) return alert("Selecione o ano escolar ou Multiano."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim(); const c = { id: uid(), yid: yr(), sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
+    function addTurma() {
+      const n = val("tn"), s = $("#ts") ? $("#ts").value : "", l = $("#tl") ? $("#tl").value : "", sh = $("#tsh") ? $("#tsh").value : "";
+      if (!n) return alert("Informe o nome da turma (ex.: 1º A ou Multiano A).");
+      if (!s) return alert("Selecione a escola da turma.");
+      if (!l) return alert("Selecione o ano escolar ou Multiano.");
+      if (!sh) return alert("Selecione o turno da turma.");
+      const cleanName = n.replace(/\s*\[Multiano\]\s*/gi, " ").replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+      if (!cleanName) return alert("Informe um nome válido para a turma.");
+      const c = { id: uid(), yid: yr(), sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh };
+      D.classes.push(c);
+      commit([P("classes", c, 1)]);
+      render();
+    }
     function saveTurma() {
-      const c = cls(S.ed); if (!c) return; const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value;
-      if (!n || !s || !l) return alert("Informe nome, escola e ano escolar (a escola precisa ter o ano vinculado).");
+      const c = cls(S.ed); if (!c) return;
+      const n = val("tn"), s = $("#ts") ? $("#ts").value : "", l = $("#tl") ? $("#tl").value : "", sh = $("#tsh") ? $("#tsh").value : "";
+      if (!n) return alert("Informe o nome da turma.");
+      if (!s) return alert("Selecione a escola da turma.");
+      if (!l) return alert("Selecione o ano escolar ou Multiano.");
       if (!sh) return alert("Selecione o turno da turma.");
       if (s != c.sid && !confirm("Mudar a escola leva a turma, com alunos e níveis, para a nova escola. Continuar?")) return;
-      const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
-      Object.assign(c, { sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }); commit([P("classes", c)]); go({ ed: null })
+      const cleanName = n.replace(/\s*\[Multiano\]\s*/gi, " ").replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+      if (!cleanName) return alert("Informe um nome válido para a turma.");
+      Object.assign(c, { sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh });
+      commit([P("classes", c)]);
+      go({ ed: null });
     }
     function dropClassData(cid) { stu(cid).forEach(s => delete D.rec[s.id]); D.students = D.students.filter(s => s.cid != cid) }
     function saveCoord() {

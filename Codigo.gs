@@ -416,7 +416,7 @@ function opPut_(ctx, op) {
     if (!o.lids.length) falha_('Marque ao menos uma etapa para a escola.');
     const ets = tbl_('levels').rows;
     if (!o.lids.every(l => ets.some(e => e.id === l))) falha_('Etapa não encontrada.');
-    if (tbl_('classes').rows.some(c => c.sid === o.id && o.lids.indexOf(c.lid) < 0))
+    if (tbl_('classes').rows.some(c => c.sid === o.id && c.lid !== 'multi' && o.lids.indexOf(c.lid) < 0))
       falha_('Esta escola tem turmas nessa etapa. Exclua as turmas antes de desvincular.');
   }
   if (k === 'classes') {
@@ -424,7 +424,7 @@ function opPut_(ctx, op) {
     if (!tbl_('years').rows.some(y => y.id === o.yid)) falha_('Ano letivo não encontrado.');
     const esc = tbl_('schools').rows.find(s => s.id === o.sid);
     if (!esc) falha_('Escola não encontrada.');
-    if (esc.lids.indexOf(o.lid) < 0) falha_('A escola não oferece a etapa escolhida.');
+    if (o.lid !== 'multi' && esc.lids.indexOf(o.lid) < 0) falha_('A escola não oferece a etapa escolhida.');
   }
   if (k === 'periods') {
     if (!o.name) falha_('Informe o nome do período.');
