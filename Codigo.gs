@@ -42,7 +42,7 @@ const SPEC = {
   years:    { sheet: 'Anos',           f: [['id','id','s'],['nome','name','s']] },
   levels:   { sheet: 'Anos_Escolares', f: [['id','id','s'],['nome','name','s'],['ordem','ord','n']] },
   schools:  { sheet: 'Escolas',        f: [['id','id','s'],['nome','name','s'],['anos_escolares','lids','l']] },
-  classes:  { sheet: 'Turmas',         f: [['id','id','s'],['ano_id','yid','s'],['escola_id','sid','s'],['nome','name','s'],['ano_escolar_id','lid','s'],['professor','prof','s']] },
+  classes:  { sheet: 'Turmas',         f: [['id','id','s'],['ano_id','yid','s'],['escola_id','sid','s'],['nome','name','s'],['ano_escolar_id','lid','s'],['professor','prof','s'],['turno','shift','s']] },
   students: { sheet: 'Alunos',         f: [['id','id','s'],['turma_id','cid','s'],['nome','name','s']] },
   periods:  { sheet: 'Periodos',       f: [['id','id','s'],['ano_id','yid','s'],['nome','name','s'],['aberto','open','b']] },
   recs:     { sheet: 'Avaliacoes',     f: [['aluno_id','aid','s'],['turma_id','cid','s'],['periodo_id','pid','s'],['escrita','w','s'],['leitura','r','s'],['atualizado_em','at','s'],['atualizado_por','by','s']] },
@@ -133,12 +133,17 @@ function folha_(nome) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) falha_('Planilha ativa não encontrada. Verifique se o script está dentro da planilha.');
   let sh = ss.getSheetByName(SPEC[nome].sheet);
+  const nc = SPEC[nome].f.length;
   if (!sh) {
     sh = ss.insertSheet(SPEC[nome].sheet);
-    const nc = SPEC[nome].f.length;
     if (sh.getMaxColumns() < nc) sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
     sh.getRange(1, 1, 1, nc).setValues([SPEC[nome].f.map(c => c[0])]).setFontWeight('bold').setBackground('#E4F2EA');
     sh.setFrozenRows(1);
+  } else {
+    if (sh.getMaxColumns() < nc) {
+      sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
+      sh.getRange(1, 1, 1, nc).setValues([SPEC[nome].f.map(c => c[0])]).setFontWeight('bold').setBackground('#E4F2EA');
+    }
   }
   return sh;
 }
@@ -556,8 +561,8 @@ function carregarDadosDeExemplo() {
     sujar_('periods');
   }
   if (!tbl_('classes').rows.length) {
-    const T = [['e1', '1º A', 'l1', 'Andressa'], ['e1', '2º A', 'l2', 'Marta'], ['e1', '3º A', 'l3', 'Iris'], ['e2', '2º A', 'l2', 'M. Edjane'], ['e3', '1º A', 'l1', 'Maiara']];
-    tbl_('classes').rows = T.map((t, i) => ({ id: 'c' + (i + 1), yid: y, sid: t[0], name: t[1], lid: t[2], prof: t[3] })); sujar_('classes');
+    const T = [['e1', '1º A', 'l1', 'Andressa', 'Matutino'], ['e1', '2º A', 'l2', 'Marta', 'Vespertino'], ['e1', '3º A', 'l3', 'Iris', 'Matutino'], ['e2', '2º A', 'l2', 'M. Edjane', 'Matutino'], ['e3', '1º A', 'l1', 'Maiara', 'Vespertino']];
+    tbl_('classes').rows = T.map((t, i) => ({ id: 'c' + (i + 1), yid: y, sid: t[0], name: t[1], lid: t[2], prof: t[3], shift: t[4] || 'Matutino' })); sujar_('classes');
     const pr = Math.random, sorteio = (a, ate) => a[Math.min(a.length - 1, Math.floor(pr() * (ate || a.length)))];
     tbl_('classes').rows.forEach(c => {
       const serie = Number(c.lid.slice(1));

@@ -2350,6 +2350,7 @@
       entrar(r);
     }
     /* ===== NÍVEIS DA PLANILHA DE DIAGNÓSTICO (ids iguais aos do Codigo.gs) ===== */
+    const TURNOS = ["Matutino", "Vespertino", "Noturno", "Integral"];
     const ESC = [["pre", "Pré-silábico", "Pré-silábico"], ["ssv", "Silábico s/ valor", "Silábico s/ valor"], ["scv", "Silábico c/ valor", "Silábico c/ valor"], ["sal", "Silábico alfabético", "Silábico alfab."], ["alf", "Alfabético", "Alfabético"], ["ort", "Ortográfico", "Ortográfico"]];
     const LEI = [["n1", "Pré-leitor · Nível 1", "Nível 1"], ["n2", "Pré-leitor · Nível 2", "Nível 2"], ["n3", "Pré-leitor · Nível 3", "Nível 3"], ["n4", "Pré-leitor · Nível 4", "Nível 4"], ["ini", "Leitor iniciante", "L. Iniciante"], ["flu", "Leitor fluente", "L. Fluente"]];
     const COR = ["#E8005F", "#F47B20", "#F2B04A", "#B9C94A", "#6DB26F", "#2F7D5B"];
@@ -2376,7 +2377,8 @@
     let _L; function render() {
       const L = !S.user; $("#login").hidden = !L; $("#app").hidden = L; if (L !== _L) { _L = L; window.scrollTo(0, 0) } if (L) return;
       $("#who").textContent = S.user.role == "admin" ? "Painel da Secretaria · Administrador" : S.user.name + " · Ano letivo " + yname(D.cur);
-      $("#view").innerHTML = S.user.role == "admin" ? admin() : coord()
+      $("#view").innerHTML = S.user.role == "admin" ? admin() : coord();
+      if ($("#sum")) upd();
     }
     function admin() {
       const T = [["anos", "Ano letivo"], ["resumo", "Resumo"], ["diag", "Diagnóstico"], ["escolas", "Escolas"], ["turmas", "Turmas"], ["coords", "Coordenadores"], ["periodos", "Períodos"], ["etapas", "Anos escolares"]];
@@ -2385,21 +2387,22 @@
     const perSel = () => `<div><label>Período</label><select onchange="go({fp:this.value})"><option value="">Todos (último registro)</option>${yPer(yr()).map(p => `<option value="${p.id}" ${S.fp == p.id ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select></div>`;
     const escSel = () => `<div><label>Escola</label><select onchange="go({fs:this.value})"><option value="">Todas as escolas</option>${D.schools.map(s => `<option value="${s.id}" ${S.fs == s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>`;
     const lvSel = () => `<div><label>Ano escolar</label><select onchange="go({fl:this.value})"><option value="">Todos os anos</option>${D.levels.map(l => `<option value="${l.id}" ${S.fl == l.id ? "selected" : ""}>${esc(l.name)}</option>`).join("")}</select></div>`;
+    const shSel = () => `<div><label>Turno</label><select onchange="go({ft:this.value})"><option value="">Todos os turnos</option>${TURNOS.map(t => `<option value="${t}" ${S.ft == t ? "selected" : ""}>${t}</option>`).join("")}</select></div>`;
     const acoes = `<div style="display:flex;gap:8px"><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="window.print()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>Imprimir / PDF</button><button class="ghost" style="height:34px;font-size:.82rem;display:inline-flex;align-items:center;gap:6px" onclick="exportarCSV()"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Exportar CSV</button></div>`;
     const printHead = t => `<div class="po"><b>PREFEITURA MUNICIPAL DE LAGOA DA CANOA · SECRETARIA MUNICIPAL DE EDUCAÇÃO</b><br>${t} · Ano letivo ${esc(yname(yr()))} · Emitido em ${new Date().toLocaleDateString("pt-BR")}</div>`;
     function exportarCSV() {
-      const y = yr(), p = S.fp || ""; let csv = "\uFEFFEscola;Turma;Professor(a);Ano escolar;Aluno;Período;Escrita;Leitura\r\n";
+      const y = yr(), p = S.fp || ""; let csv = "\uFEFFEscola;Turma;Ano escolar;Turno;Professor(a);Aluno;Período;Escrita;Leitura\r\n";
       const q = v => '"' + String(v).replace(/"/g, '""') + '"', nm = (L, id) => (L.find(e => e[0] == id) || [0, ""])[1];
-      D.classes.filter(c => c.yid == y && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl)).forEach(c => stu(c.id).forEach(s => (p ? [per(p)] : yPer(y)).forEach(pp => { const x = rc(s.id, pp.id); if (x[0] || x[1]) csv += [sch(c.sid)?.name || "", c.name, c.prof || "", lname(c.lid), s.name, pp.name, nm(ESC, x[0]), nm(LEI, x[1])].map(q).join(";") + "\r\n" })));
+      D.classes.filter(c => c.yid == y && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl)).forEach(c => stu(c.id).forEach(s => (p ? [per(p)] : yPer(y)).forEach(pp => { const x = rc(s.id, pp.id); if (x[0] || x[1]) csv += [sch(c.sid)?.name || "", c.name, lname(c.lid), c.shift || "", c.prof || "", s.name, pp.name, nm(ESC, x[0]), nm(LEI, x[1])].map(q).join(";") + "\r\n" })));
       const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" })); a.download = `diagnostico_fundamental1_${yname(y)}.csv`; document.body.appendChild(a); a.click(); a.remove();
     }
     function aResumo() {
-      const cl = D.classes.filter(c => c.yid == yr() && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl)), t = tally(cl, S.fp);
+      const cl = D.classes.filter(c => c.yid == yr() && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl) && (!S.ft || c.shift == S.ft)), t = tally(cl, S.fp);
       const dist = (nm, a, s) => nm.map((n, i) => `<div class="irow" title="${n[1]}: ${a[i]} aluno(s)"><span><i class="dot" style="background:${COR[i]}"></i>${n[1]}</span><div class="bar"><i style="width:${pct(a[i], s)}%;background:${COR[i]}"></i></div><b>${a[i]}</b></div>`).join("");
       const lin = (nome, c2, extra) => { const q = tally(c2, S.fp); return `<tr><td><b>${esc(nome)}</b></td><td>${c2.length}</td><td>${q.n}</td><td style="min-width:150px">${sbar(q.w, ESC)}</td><td><b>${q.sw ? q.pa + "%" : "-"}</b></td><td style="min-width:150px">${sbar(q.r, LEI)}</td><td><b>${q.sr ? q.pl + "%" : "-"}</b></td><td>${sit(Math.round((q.pa + q.pl) / 2), q.sw + q.sr)}</td></tr>` };
       const th = a => `<thead><tr><th>${a}</th><th>Turmas</th><th>Alunos</th><th>Escrita</th><th>% Alfab.+</th><th>Leitura</th><th>% Leitor</th><th>Situação</th></tr></thead>`;
       return `<div class="kpis"><div class="kpi a"><b>${D.schools.length}</b><small>Escolas</small></div><div class="kpi b"><b>${cl.length}</b><small>Turmas</small></div><div class="kpi c"><b>${t.n}</b><small>Alunos (${t.av} com escrita e leitura avaliadas)</small></div><div class="kpi d"><b>${t.sw ? t.pa : 0}%</b><small>Escrita alfabética ou ortográfica</small></div><div class="kpi d"><b>${t.sr ? t.pl : 0}%</b><small>Leitores iniciantes ou fluentes</small></div></div>
-      <div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h3 style="margin:0">Filtros de análise</h3>${acoes}</div><div class="grid">${perSel()}${escSel()}${lvSel()}</div></div>${printHead("Resumo geral")}
+      <div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h3 style="margin:0">Filtros de análise</h3>${acoes}</div><div class="grid">${perSel()}${escSel()}${lvSel()}${shSel()}</div></div>${printHead("Resumo geral")}
       <div class="pair"><div class="card"><h3>Níveis de escrita</h3>${t.sw ? dist(ESC, t.w, t.sw) : '<p class="empty">Sem avaliações neste filtro.</p>'}</div><div class="card"><h3>Níveis de leitura</h3>${t.sr ? dist(LEI, t.r, t.sr) : '<p class="empty">Sem avaliações neste filtro.</p>'}</div></div>
       <div class="card"><h3>Resultado por ano escolar</h3>${legend(ESC)}<div class="tw"><table>${th("Ano escolar")}<tbody>${D.levels.map(l => ({ l, c2: cl.filter(c => c.lid == l.id) })).filter(x => x.c2.length).map(x => lin(x.l.name, x.c2)).join("")}</tbody></table></div></div>
       <div class="card"><h3>Resultado por escola</h3><p style="margin:-6px 0 8px;color:var(--mut);font-size:.84rem">Situação: média entre % de escrita alfabética+ e % de leitores. Adequado ≥ 70% · Atenção ≥ 50% · Prioritário &lt; 50%.</p><div class="tw"><table>${th("Escola")}<tbody>${D.schools.map(s => ({ s, c2: cl.filter(c => c.sid == s.id) })).filter(x => x.c2.length).map(x => lin(x.s.name, x.c2)).join("") || '<tr><td colspan="8" class="empty">Nenhuma turma.</td></tr>'}</tbody></table></div></div>`;
@@ -2407,9 +2410,9 @@
     /* Tabela idêntica à planilha: Professor(a) · Turma · Ano · Alunos · níveis de escrita · níveis de leitura */
     function diagTable(sid, pid) {
       const sc = sch(sid); if (!sc) return "";
-      const cl = D.classes.filter(c => c.sid == sid && c.yid == yr() && (!S.fl || c.lid == S.fl)).sort((a, b) => D.levels.findIndex(l => l.id == a.lid) - D.levels.findIndex(l => l.id == b.lid) || a.name.localeCompare(b.name, "pt-BR"));
+      const cl = D.classes.filter(c => c.sid == sid && c.yid == yr() && (!S.fl || c.lid == S.fl) && (!S.ft || c.shift == S.ft)).sort((a, b) => D.levels.findIndex(l => l.id == a.lid) - D.levels.findIndex(l => l.id == b.lid) || a.name.localeCompare(b.name, "pt-BR"));
       if (!cl.length) return "";
-      const tot = tally(cl, pid), row = (c, t, b) => `<tr ${b ? 'class="tot"' : ""}><td style="text-align:left">${b ? "TOTAL" : esc(c.prof || "—")}</td><td>${b ? "" : esc(c.name)}</td><td>${b ? "" : esc(lname(c.lid))}</td><td><b>${t.n}</b></td>${t.w.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sw ? t.pa + "%" : "-"}</b></td>${t.r.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sr ? t.pl + "%" : "-"}</b></td></tr>`;
+      const tot = tally(cl, pid), row = (c, t, b) => `<tr ${b ? 'class="tot"' : ""}><td style="text-align:left">${b ? "TOTAL" : esc(c.prof || "—")}</td><td>${b ? "" : esc(c.name)}</td><td>${b ? "" : esc(lname(c.lid))}</td><td>${b ? "" : `<span class="badge" style="margin:0;font-size:.76rem">${esc(c.shift || "—")}</span>`}</td><td><b>${t.n}</b></td>${t.w.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sw ? t.pa + "%" : "-"}</b></td>${t.r.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sr ? t.pl + "%" : "-"}</b></td></tr>`;
       return `<div class="card dg">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1.5px solid var(--ln);padding-bottom:10px">
           <h3 style="margin:0;color:var(--navy);font-size:1.05rem;display:flex;align-items:center;gap:8px">
@@ -2430,6 +2433,7 @@
                 <th rowspan="2" style="width:140px">Professor(a)</th>
                 <th rowspan="2" style="width:50px">Turma</th>
                 <th rowspan="2" style="width:55px">Ano</th>
+                <th rowspan="2" style="width:75px">Turno</th>
                 <th rowspan="2" style="width:50px">Alunos</th>
                 <th class="we" colspan="7">ESCRITA</th>
                 <th class="wl" colspan="7">LEITURA</th>
@@ -2496,7 +2500,13 @@
     const cancelBtn = `<button class="ghost" style="margin-left:8px" onclick="go({ed:null})">Cancelar</button>`;
     function aTurmas() {
       const e = S.ed && cls(S.ed), sid = e ? e.sid : D.schools[0]?.id;
-      return addBox(e ? "Editar turma" : "Criar turma", `<div class="grid"><div><label>Escola</label><select id="ts" onchange="chgTs()">${D.schools.map(s => `<option value="${s.id}" ${s.id == sid ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div><div><label>Nome da turma</label><input id="tn" placeholder="Ex.: 3º A" value="${e ? esc(e.name) : ""}"></div><div><label>Ano escolar</label><select id="tl">${lvOpts(sid, e?.lid)}</select></div><div><label>Professor(a)</label><input id="tp" placeholder="Nome do professor(a)" value="${e ? esc(e.prof || "") : ""}"></div></div>`, e ? `<button class="btn" onclick="saveTurma()">Salvar alterações</button>${cancelBtn}` : `<button class="btn" onclick="addTurma()">Criar turma</button>`) + `<div class="card"><h3>Turmas · ${esc(yname(yr()))}</h3><div class="tw"><table><tr><th>Escola</th><th>Turma</th><th>Ano</th><th>Professor(a)</th><th>Alunos</th><th></th></tr>${yCl(yr()).map(c => `<tr ${S.ed == c.id ? 'style="background:var(--gs)"' : ""}><td>${esc(sch(c.sid)?.name || "")}</td><td>${esc(c.name)}</td><td>${esc(lname(c.lid))}</td><td>${esc(c.prof || "—")}</td><td>${stu(c.id).length}</td><td style="text-align:right;white-space:nowrap"><button class="ghost" style="height:34px;padding:0 12px" onclick="abrir('${c.id}')">Lançar níveis</button> ${editBtn(c.id)}<button class="dan" onclick="del('class','${c.id}')">Excluir</button></td></tr>`).join("")}</table>${yCl(yr()).length ? "" : '<p class="empty">Nenhuma turma neste ano letivo. Crie uma turma ou copie de outro ano na aba <b>Ano letivo</b>.</p>'}</div></div>`
+      return addBox(e ? "Editar turma" : "Criar turma", `<div class="grid">
+        <div><label>Escola</label><select id="ts" onchange="chgTs()">${D.schools.map(s => `<option value="${s.id}" ${s.id == sid ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>
+        <div><label>Nome da turma</label><input id="tn" placeholder="Ex.: 3º A" value="${e ? esc(e.name) : ""}"></div>
+        <div><label>Ano escolar</label><select id="tl">${lvOpts(sid, e?.lid)}</select></div>
+        <div><label>Turno</label><select id="tsh"><option value="">Selecione o turno</option>${TURNOS.map(t => `<option value="${t}" ${e && e.shift == t ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+        <div><label>Professor(a)</label><input id="tp" placeholder="Nome do professor(a)" value="${e ? esc(e.prof || "") : ""}"></div>
+      </div>`, e ? `<button class="btn" onclick="saveTurma()">Salvar alterações</button>${cancelBtn}` : `<button class="btn" onclick="addTurma()">Criar turma</button>`) + `<div class="card"><h3>Turmas · ${esc(yname(yr()))}</h3><div class="tw"><table><tr><th>Escola</th><th>Turma</th><th>Ano</th><th>Turno</th><th>Professor(a)</th><th>Alunos</th><th></th></tr>${yCl(yr()).map(c => `<tr ${S.ed == c.id ? 'style="background:var(--gs)"' : ""}><td>${esc(sch(c.sid)?.name || "")}</td><td><b>${esc(c.name)}</b></td><td>${esc(lname(c.lid))}</td><td><span class="badge" style="margin:0;font-size:.78rem">${esc(c.shift || "—")}</span></td><td>${esc(c.prof || "—")}</td><td>${stu(c.id).length}</td><td style="text-align:right;white-space:nowrap"><button class="ghost" style="height:34px;padding:0 12px" onclick="abrir('${c.id}')">Lançar níveis</button> ${editBtn(c.id)}<button class="dan" onclick="del('class','${c.id}')">Excluir</button></td></tr>`).join("")}</table>${yCl(yr()).length ? "" : '<p class="empty">Nenhuma turma neste ano letivo. Crie uma turma ou copie de outro ano na aba <b>Ano letivo</b>.</p>'}</div></div>`
     }
     
     function atualizarContadorEscolas(el) {
@@ -2596,12 +2606,13 @@
     function addEscola() { const n = val("ne"), l = [...document.querySelectorAll(".ns:checked")].map(x => x.value); if (!n || !l.length) { $("#se").innerHTML = '<div class="err">Informe o nome e marque ao menos um ano escolar.</div>'; return } { const s = { id: uid(), name: n, lids: l }; D.schools.push(s); D.schools.sort((a, b) => (a.name || "").localeCompare(b.name || "", "pt-BR")); commit([P("schools", s, 1)]); render() } }
     const lvOpts = (sid, sel) => { const s = sch(sid); return D.levels.filter(l => s && s.lids.includes(l.id)).map(l => `<option value="${l.id}" ${l.id == sel ? "selected" : ""}>${esc(l.name)}</option>`).join("") || '<option value="">Sem etapas vinculadas</option>' };
     function chgTs() { $("#tl").innerHTML = lvOpts($("#ts").value) }
-    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value; if (s && !l) return alert("Esta escola ainda não tem anos escolares vinculados. Marque-os na aba Escolas."); if (n && s && l) { const c = { id: uid(), yid: yr(), sid: s, name: n, lid: l, prof: val("tp") }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
+    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (s && !l) return alert("Esta escola ainda não tem anos escolares vinculados. Marque-os na aba Escolas."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const c = { id: uid(), yid: yr(), sid: s, name: n, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
     function saveTurma() {
-      const c = cls(S.ed); if (!c) return; const n = val("tn"), s = $("#ts").value, l = $("#tl").value;
+      const c = cls(S.ed); if (!c) return; const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value;
       if (!n || !s || !l) return alert("Informe nome, escola e ano escolar (a escola precisa ter o ano vinculado).");
+      if (!sh) return alert("Selecione o turno da turma.");
       if (s != c.sid && !confirm("Mudar a escola leva a turma, com alunos e níveis, para a nova escola. Continuar?")) return;
-      Object.assign(c, { sid: s, name: n, lid: l, prof: val("tp") }); commit([P("classes", c)]); go({ ed: null })
+      Object.assign(c, { sid: s, name: n, lid: l, prof: val("tp"), shift: sh }); commit([P("classes", c)]); go({ ed: null })
     }
     function dropClassData(cid) { stu(cid).forEach(s => delete D.rec[s.id]); D.students = D.students.filter(s => s.cid != cid) }
     function saveCoord() {
@@ -2623,7 +2634,7 @@
       if (!n) return m("Informe o nome do ano letivo."); if (D.years.some(y => y.name.toLowerCase() == n.toLowerCase())) return m("Já existe um ano letivo com esse nome.");
       const y = { id: uid(), name: n }, ops = [P("years", y, 1)]; D.years.push(y);
       if (f) {
-        if ($("#yc").checked) D.classes.filter(c => c.yid == f && sch(c.sid)).forEach(c => { const x = { id: uid(), yid: y.id, sid: c.sid, name: c.name, lid: c.lid, prof: c.prof }; D.classes.push(x); ops.push(P("classes", x, 1)) });
+        if ($("#yc").checked) D.classes.filter(c => c.yid == f && sch(c.sid)).forEach(c => { const x = { id: uid(), yid: y.id, sid: c.sid, name: c.name, lid: c.lid, prof: c.prof, shift: c.shift || "" }; D.classes.push(x); ops.push(P("classes", x, 1)) });
         if ($("#yp").checked) D.periods.filter(p => p.yid == f).forEach((p, i) => { const x = { id: uid(), yid: y.id, name: p.name, open: i == 0 }; D.periods.push(x); ops.push(P("periods", x, 1)) })
       }
       if ($("#yv").checked) { D.cur = y.id; ops.push({ t: "cur", id: y.id }) } S.yr = y.id; S.fp = ""; commit(ops); render()
@@ -2664,7 +2675,7 @@
       if (!op.find(p => p.id == S.pid)) S.pid = op[0].id;
       if (!S.cid) {
         const cl = D.classes.filter(c => c.sid == S.sid && c.yid == D.cur);
-        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><div class="hello" style="margin:0"><h2>${esc(s.name)}</h2><p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p></div><button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">Ver diagnóstico da escola</button></div><div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div><div class="list">${cl.map(c => { const st = classStatus(c.id, S.pid); return `<button class="item" onclick="abrir('${c.id}')"><h4>${esc(c.name)} · ${esc(lname(c.lid))}</h4><small>${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small><br>${st.status == "completa" ? `<span class="badge">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x">${st.total ? "Pendente" : "Sem alunos"}</span>`}</button>` }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}</div>`
+        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><div class="hello" style="margin:0"><h2>${esc(s.name)}</h2><p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p></div><button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">Ver diagnóstico da escola</button></div><div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div><div class="list">${cl.map(c => { const st = classStatus(c.id, S.pid); return `<button class="item" onclick="abrir('${c.id}')"><h4>${esc(c.name)} · ${esc(lname(c.lid))}${c.shift ? " · " + esc(c.shift) : ""}</h4><small>${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small><br>${st.status == "completa" ? `<span class="badge">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x">${st.total ? "Pendente" : "Sem alunos"}</span>`}</button>` }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}</div>`
       }
       return `<button class="crumb" onclick="go({cid:null})">← Voltar às turmas</button>` + lancar()
     }
@@ -2691,10 +2702,10 @@
           <div class="hero-turma-info">
             <h2>
               <span>${esc(c.name)}</span>
-              <span class="hero-badge-ano">${esc(lname(c.lid))}</span>
+              <span class="hero-badge-ano">${esc(lname(c.lid))}</span>${c.shift ? `<span class="hero-badge-ano" style="background:var(--os);color:#8A4A0B;border-color:rgba(244,123,32,.25)">${esc(c.shift)}</span>` : ""}
             </h2>
             <div class="hero-meta">
-              <span>${esc(sch(c.sid)?.name || "")} · Professor(a): <b>${esc(c.prof || "—")}</b></span>
+              <span>${esc(sch(c.sid)?.name || "")} · Turno: <b>${esc(c.shift || "Não informado")}</b> · Professor(a): <b>${esc(c.prof || "—")}</b></span>
             </div>
           </div>
           <div class="hero-prog-box">
@@ -2779,7 +2790,7 @@
           <button class="btn" id="sf" onclick="salvar()" style="min-width:180px;height:38px;font-size:.9rem">Salvar preenchimento</button>
         </div>
       </div>
-      `;
+      ${(setTimeout(upd, 0), "")}`;
     }
 
     const rowAluno = s => {
