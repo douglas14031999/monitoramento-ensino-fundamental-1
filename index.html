@@ -2621,6 +2621,9 @@
           } else {
             D = Object.assign(vazio(), r.data);
           }
+          if (D.periods) {
+            D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
+          }
           normalizarTurmas(D.classes);
           normalizarAlunos(D.students, D.classes);
           if (r.role == "admin") {
@@ -2636,6 +2639,9 @@
         }
       } else if (typeof DADOS_REAIS !== "undefined") {
         D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
+        if (D.periods) {
+          D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
+        }
         normalizarTurmas(D.classes);
         normalizarAlunos(D.students, D.classes);
       }
@@ -2709,6 +2715,9 @@
     const P = (k, o, n) => ({ t: "put", k, o: ser(k, o), n: n ? 1 : 0 }), X = (k, id) => ({ t: "del", k, id }), ordOps = k => D[k].map(o => P(k, o));
     function adopt(r) {
       D = Object.assign(vazio(), r.data);
+      if (D.periods) {
+        D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
+      }
       normalizarTurmas(D.classes);
       normalizarAlunos(D.students, D.classes);
       S.user = r.role == "admin" ? { role: "admin" } : { role: "coord", name: r.name, sids: D.schools.map(s => s.id) };
@@ -2828,6 +2837,9 @@
       if (btn) { btn.disabled = true; btn.textContent = "Gravando dados reais na planilha…"; }
       if (typeof DADOS_REAIS !== "undefined") {
         D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
+        if (D.periods) {
+          D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
+        }
         normalizarTurmas(D.classes);
         normalizarAlunos(D.students, D.classes);
         if (!D.cur && D.years && D.years[0]) D.cur = D.years[0].id;
@@ -2842,7 +2854,10 @@
         alert("Sucesso! Banco de dados limpo e carregado com os dados reais da rede municipal de Lagoa da Canoa:\n\n• 19 Escolas Municipais\n• 67 Turmas (42 Regulares e 25 Multiano)\n• 1.332 Alunos\n• Diagnóstico real: Entrada, 1º e 2º Bimestre.");
       } else {
         if (typeof DADOS_REAIS !== "undefined") {
-          alert("Dados reais carregados localmente com sucesso! (" + (r.err || "Aguardando sincronização com a planilha") + ")");
+          const avisoDeploy = (r.err === "Pedido inválido.")
+            ? "\n\n⚠️ Para gravar permanentemente na planilha do Google Sheets:\n1. Acesse sua planilha e clique em Extensões > Apps Script\n2. Cole o código atualizado do arquivo Codigo.gs\n3. Clique em Salvar e em seguida Implantar > Gerenciar implantações > Editar > Nova versão > Implantar."
+            : " (" + (r.err || "Aguardando sincronização com a planilha") + ")";
+          alert("Dados reais aplicados na interface com sucesso!" + avisoDeploy);
         } else {
           alert(r.err || "Erro ao conectar com a planilha.");
         }

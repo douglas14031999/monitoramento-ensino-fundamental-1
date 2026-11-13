@@ -818,26 +818,31 @@
   "periods": [
     {
       "id": "p0",
+      "yid": "y1",
       "name": "Diagnóstico de Entrada",
       "open": false
     },
     {
       "id": "p1",
+      "yid": "y1",
       "name": "1º Bimestre",
       "open": false
     },
     {
       "id": "p2",
+      "yid": "y1",
       "name": "2º Bimestre",
       "open": false
     },
     {
       "id": "p3",
+      "yid": "y1",
       "name": "3º Bimestre",
       "open": true
     },
     {
       "id": "p4",
+      "yid": "y1",
       "name": "4º Bimestre",
       "open": false
     }
