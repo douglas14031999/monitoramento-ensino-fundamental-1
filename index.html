@@ -2833,7 +2833,7 @@
       adopt(r); render(); return true;
     }
     async function carregarDadosReais(btn) {
-      if (!confirm("Tem certeza que deseja limpar o banco de testes atual e carregar os DADOS REAIS da rede municipal de Lagoa da Canoa?\n\nIsso irá registrar as 19 Escolas, 67 Turmas (Regulares e Multiano), 1.332 Alunos e as avaliações reais de Entrada, 1º e 2º Bimestres.")) return;
+      if (!confirm("Tem certeza que deseja limpar o banco de testes atual e carregar os DADOS REAIS da rede municipal de Lagoa da Canoa?\n\nIsso irá registrar as 19 Escolas, 74 Turmas (Regulares e Multiano), 1.222 Alunos e as avaliações reais de Entrada, 1º e 2º Bimestres.")) return;
       if (btn) { btn.disabled = true; btn.textContent = "Gravando dados reais na planilha…"; }
       if (typeof DADOS_REAIS !== "undefined") {
         D = Object.assign(vazio(), JSON.parse(JSON.stringify(DADOS_REAIS)));
@@ -2851,7 +2851,7 @@
       const r = await api({ a: "dados_reais", token: TOK });
       if (r.ok) {
         await recarregar(true);
-        alert("Sucesso! Banco de dados limpo e carregado com os dados reais da rede municipal de Lagoa da Canoa:\n\n• 19 Escolas Municipais\n• 67 Turmas (42 Regulares e 25 Multiano)\n• 1.332 Alunos\n• Diagnóstico real: Entrada, 1º e 2º Bimestre.");
+        alert("Sucesso! Banco de dados limpo e carregado com os dados reais da rede municipal de Lagoa da Canoa:\n\n• 19 Escolas Municipais\n• 74 Turmas (65 Regulares e 9 Multiano)\n• 1.222 Alunos\n• Diagnóstico real: Entrada, 1º e 2º Bimestre.");
       } else {
         if (typeof DADOS_REAIS !== "undefined") {
           const avisoDeploy = (r.err === "Pedido inválido.")
