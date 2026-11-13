@@ -43,7 +43,7 @@ const SPEC = {
   levels:   { sheet: 'Anos_Escolares', f: [['id','id','s'],['nome','name','s'],['ordem','ord','n']] },
   schools:  { sheet: 'Escolas',        f: [['id','id','s'],['nome','name','s'],['anos_escolares','lids','l']] },
   classes:  { sheet: 'Turmas',         f: [['id','id','s'],['ano_id','yid','s'],['escola_id','sid','s'],['nome','name','s'],['ano_escolar_id','lid','s'],['professor','prof','s'],['turno','shift','s']] },
-  students: { sheet: 'Alunos',         f: [['id','id','s'],['turma_id','cid','s'],['nome','name','s']] },
+  students: { sheet: 'Alunos',         f: [['id','id','s'],['turma_id','cid','s'],['nome','name','s'],['ano_escolar_id','lid','s']] },
   periods:  { sheet: 'Periodos',       f: [['id','id','s'],['ano_id','yid','s'],['nome','name','s'],['aberto','open','b']] },
   recs:     { sheet: 'Avaliacoes',     f: [['aluno_id','aid','s'],['turma_id','cid','s'],['periodo_id','pid','s'],['escrita','w','s'],['leitura','r','s'],['atualizado_em','at','s'],['atualizado_por','by','s']] },
   coords:   { sheet: 'Coordenadores',  f: [['cpf','cpf','c'],['nome','name','s'],['escolas','sids','l']] },
@@ -496,7 +496,8 @@ function opStu_(ctx, op) {
     if (!idOk_(id) || vistos[id]) falha_('Aluno com identificação inválida.');
     if (!nome) falha_('Há aluno sem nome na lista.');
     if (t.rows.some(s => s.id === id && s.cid !== c.id)) falha_('Aluno já pertence a outra turma.');
-    vistos[id] = 1; return { id: id, cid: c.id, name: nome };
+    const lid = String(a && a.lid || '').trim();
+    vistos[id] = 1; return { id: id, cid: c.id, name: nome, lid: lid };
   });
   removerRecs_(r => r.cid === c.id && !vistos[r.aid]);
   t.rows = t.rows.filter(s => s.cid !== c.id).concat(nova); t.dirty = true;

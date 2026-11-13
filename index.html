@@ -2567,6 +2567,27 @@
       if (s.includes("integ")) return "Integral";
       return "";
     }
+    const sLid = (s, c) => (s && s.lid) || (c && c.lid !== "multi" ? c.lid : "") || "";
+    function normalizarAlunos(students, classes) {
+      if (!students || !Array.isArray(students)) return;
+      students.forEach(s => {
+        if (!s.lid && s.name) {
+          const m = s.name.match(/\s*[-–(\[]\s*([1-5]º?\s*Ano|[1-5]º?)\s*[\)\]]?/i);
+          if (m) {
+            const num = m[1].replace(/\D/g, "");
+            const found = D.levels.find(l => l.name.includes(num + "º"));
+            if (found) s.lid = found.id;
+            s.name = s.name.replace(m[0], "").trim();
+          }
+        } else if (s.lid && s.name) {
+          s.name = s.name.replace(/\s*[-–(\[]\s*([1-5]º?\s*Ano|[1-5]º?)\s*[\)\]]?/gi, "").trim();
+        }
+        const c = classes?.find(cl => cl.id == s.cid);
+        if (c && c.lid != "multi" && !s.lid) {
+          s.lid = c.lid;
+        }
+      });
+    }
     function normalizarTurmas(classes) {
       if (!classes || !Array.isArray(classes)) return;
       classes.forEach(c => {
@@ -2591,6 +2612,7 @@
         if (r && r.data) {
           D = Object.assign(vazio(), r.data);
           normalizarTurmas(D.classes);
+          normalizarAlunos(D.students, D.classes);
       if (r.role == "admin") {
             S.user = { role: "admin" };
             S.tab = "resumo";
@@ -2636,6 +2658,18 @@
       const c = JSON.parse(JSON.stringify(o));
       if (k == "levels") c.ord = D.levels.indexOf(o);
       if (k == "inds") c.ord = D.inds.indexOf(o);
+      if (k == "students") {
+        const cleanName = (c.name || "").replace(/\s*[-–(\[]\s*([1-5]º?\s*Ano|[1-5]º?)\s*[\)\]]?/gi, "").trim();
+        const parentClass = D.classes.find(cl => cl.id == c.cid);
+        if (parentClass && parentClass.lid == "multi" && c.lid) {
+          c.name = cleanName + " [" + lname(c.lid) + "]";
+        } else {
+          c.name = cleanName;
+        }
+        if (!c.lid && parentClass && parentClass.lid != "multi") {
+          c.lid = parentClass.lid;
+        }
+      }
       if (k == "classes") {
         const sh = normalizeShift(c.shift);
         const cleanName = (c.name || "").replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
@@ -2652,6 +2686,7 @@
     function adopt(r) {
       D = Object.assign(vazio(), r.data);
       normalizarTurmas(D.classes);
+      normalizarAlunos(D.students, D.classes);
       S.user = r.role == "admin" ? { role: "admin" } : { role: "coord", name: r.name, sids: D.schools.map(s => s.id) };
       if (S.sid && !sch(S.sid)) { S.sid = null; S.cid = null }
       if (S.cid && !D.classes.some(c => c.id == S.cid)) S.cid = null;
@@ -2805,7 +2840,7 @@
     window.addEventListener("beforeunload", e => { if (pend) { e.preventDefault(); e.returnValue = "" } });
     const $ = s => document.querySelector(s), esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
     const mask = v => v.replace(/\D/g, "").slice(0, 11).replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-    const lname = id => D.levels.find(l => l.id == id)?.name || "—", sch = id => D.schools.find(s => s.id == id), per = id => D.periods.find(p => p.id == id), uid = (() => { let n = 0; return () => "x" + Date.now().toString(36) + (++n).toString(36) + Math.random().toString(36).slice(2, 5) })(), pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+    const lname = id => id === "multi" ? "Multiano" : (D.levels.find(l => l.id == id)?.name || "—"), sch = id => D.schools.find(s => s.id == id), per = id => D.periods.find(p => p.id == id), uid = (() => { let n = 0; return () => "x" + Date.now().toString(36) + (++n).toString(36) + Math.random().toString(36).slice(2, 5) })(), pct = (a, b) => b ? Math.round(a / b * 100) : 0;
     const go = o => { Object.assign(S, o); render() };
     const yname = id => D.years.find(y => y.id == id)?.name || "—", yr = () => D.years.some(y => y.id == S.yr) ? S.yr : D.cur, yCl = y => D.classes.filter(c => c.yid == y), yPer = y => D.periods.filter(p => p.yid == y);
     const openP = () => D.periods.filter(p => p.open && p.yid == D.cur);
@@ -2841,9 +2876,10 @@
     const rc = (aid, pid) => ((D.rec[aid] || {})[pid]) || ["", ""];
     function lastRec(aid) { const ps = yPer(yr()); for (let i = ps.length - 1; i >= 0; i--) { const x = (D.rec[aid] || {})[ps[i].id]; if (x && (x[0] || x[1])) return x } return null }
     /* conta alunos por nível de escrita e de leitura (pid vazio = último registro de cada aluno no ano) */
-    function tally(cl, pid) {
+    function tally(cl, pid, fl) {
       const w = ESC.map(() => 0), r = LEI.map(() => 0); let n = 0, av = 0;
-      cl.forEach(c => stu(c.id).forEach(s => {
+      const targetFl = fl !== undefined ? fl : (S.fl || "");
+      cl.forEach(c => stu(c.id).filter(s => !targetFl || sLid(s, c) == targetFl).forEach(s => {
         n++; const x = pid ? (D.rec[s.id] || {})[pid] : lastRec(s.id); if (!x) return;
         const iw = ESC.findIndex(e => e[0] == x[0]), ir = LEI.findIndex(e => e[0] == x[1]);
         if (iw >= 0) w[iw]++; if (ir >= 0) r[ir]++; if (iw >= 0 && ir >= 0) av++;
@@ -2903,7 +2939,7 @@
     function exportarCSV() {
       const y = yr(), p = S.fp || ""; let csv = "\uFEFFEscola;Turma;Ano escolar;Turno;Professor(a);Aluno;Período;Escrita;Leitura\r\n";
       const q = v => '"' + String(v).replace(/"/g, '""') + '"', nm = (L, id) => (L.find(e => e[0] == id) || [0, ""])[1];
-      D.classes.filter(c => c.yid == y && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl)).forEach(c => stu(c.id).forEach(s => (p ? [per(p)] : yPer(y)).forEach(pp => { const x = rc(s.id, pp.id); if (x[0] || x[1]) csv += [sch(c.sid)?.name || "", c.name, lname(c.lid), c.shift || "", c.prof || "", s.name, pp.name, nm(ESC, x[0]), nm(LEI, x[1])].map(q).join(";") + "\r\n" })));
+      D.classes.filter(c => c.yid == y && (!S.fs || c.sid == S.fs) && (!S.fl || c.lid == S.fl)).forEach(c => stu(c.id).forEach(s => (p ? [per(p)] : yPer(y)).forEach(pp => { const x = rc(s.id, pp.id); if (x[0] || x[1]) csv += [sch(c.sid)?.name || "", c.name, lname(sLid(s, c)), c.shift || "", c.prof || "", s.name, pp.name, nm(ESC, x[0]), nm(LEI, x[1])].map(q).join(";") + "\r\n" })));
       const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" })); a.download = `diagnostico_fundamental1_${yname(y)}.csv`; document.body.appendChild(a); a.click(); a.remove();
     }
     function aResumo() {
@@ -2914,7 +2950,20 @@
       return `<div class="kpis"><div class="kpi a"><b>${D.schools.length}</b><small>Escolas</small></div><div class="kpi b"><b>${cl.length}</b><small>Turmas</small></div><div class="kpi c"><b>${t.n}</b><small>Alunos (${t.av} com escrita e leitura avaliadas)</small></div><div class="kpi d"><b>${t.sw ? t.pa : 0}%</b><small>Escrita alfabética ou ortográfica</small></div><div class="kpi d"><b>${t.sr ? t.pl : 0}%</b><small>Leitores iniciantes ou fluentes</small></div></div>
       <div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h3 style="margin:0">Filtros de análise</h3>${acoes}</div><div class="grid">${perSel()}${escSel()}${lvSel()}${shSel()}</div></div>${printHead("Resumo geral")}
       <div class="pair"><div class="card"><h3>Níveis de escrita</h3>${t.sw ? dist(ESC, t.w, t.sw) : '<p class="empty">Sem avaliações neste filtro.</p>'}</div><div class="card"><h3>Níveis de leitura</h3>${t.sr ? dist(LEI, t.r, t.sr) : '<p class="empty">Sem avaliações neste filtro.</p>'}</div></div>
-      <div class="card"><h3>Resultado por ano escolar</h3>${legend(ESC)}<div class="tw"><table>${th("Ano escolar")}<tbody>${D.levels.map(l => ({ l, c2: cl.filter(c => c.lid == l.id) })).filter(x => x.c2.length).map(x => lin(x.l.name, x.c2)).join("")}</tbody></table></div></div>
+      <div class="card"><h3>Resultado por ano escolar</h3>${legend(ESC)}<div class="tw"><table>${th("Ano escolar")}<tbody>${D.levels.map(l => {
+        const alunosAno = cl.flatMap(c => stu(c.id).filter(s => sLid(s, c) == l.id));
+        if (!alunosAno.length) return "";
+        const turmasContadas = new Set(cl.filter(c => stu(c.id).some(s => sLid(s, c) == l.id))).size;
+        const q = { w: ESC.map(() => 0), r: LEI.map(() => 0), n: alunosAno.length, av: 0 };
+        alunosAno.forEach(s => {
+          const x = S.fp ? (D.rec[s.id] || {})[S.fp] : lastRec(s.id); if (!x) return;
+          const iw = ESC.findIndex(e => e[0] == x[0]), ir = LEI.findIndex(e => e[0] == x[1]);
+          if (iw >= 0) q.w[iw]++; if (ir >= 0) q.r[ir]++; if (iw >= 0 && ir >= 0) q.av++;
+        });
+        q.sw = q.w.reduce((a, b) => a + b, 0); q.sr = q.r.reduce((a, b) => a + b, 0);
+        q.pa = pct(q.w[4] + q.w[5], q.sw); q.pl = pct(q.r[4] + q.r[5], q.sr);
+        return `<tr><td><b>${esc(l.name)}</b></td><td>${turmasContadas}</td><td>${q.n}</td><td style="min-width:150px">${sbar(q.w, ESC)}</td><td><b>${q.sw ? q.pa + "%" : "-"}</b></td><td style="min-width:150px">${sbar(q.r, LEI)}</td><td><b>${q.sr ? q.pl + "%" : "-"}</b></td><td>${sit(Math.round((q.pa + q.pl) / 2), q.sw + q.sr)}</td></tr>`;
+      }).filter(Boolean).join("")}</tbody></table></div></div>
       <div class="card"><h3>Resultado por escola</h3><p style="margin:-6px 0 8px;color:var(--mut);font-size:.84rem">Situação: média entre % de escrita alfabética+ e % de leitores. Adequado ≥ 70% · Atenção ≥ 50% · Prioritário &lt; 50%.</p><div class="tw"><table>${th("Escola")}<tbody>${D.schools.map(s => ({ s, c2: cl.filter(c => c.sid == s.id) })).filter(x => x.c2.length).map(x => lin(x.s.name, x.c2)).join("") || '<tr><td colspan="8" class="empty">Nenhuma turma.</td></tr>'}</tbody></table></div></div>`;
     }
     const fmtVal = v => v > 0 ? `<b class="val-num">${v}</b>` : `<span class="val-zero">0</span>`;
@@ -3341,9 +3390,14 @@
     function aPeriodos() { return addBox("Abrir novo período", `<label>Nome do período</label><input id="pn" placeholder="Ex.: 3º Bimestre, 1º Semestre…">`, `<button class="btn" onclick="addPeriodo()">Cadastrar período</button>`) + `<div class="card"><h3>Períodos · ${esc(yname(yr()))}</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">Períodos <b>abertos</b> aparecem automaticamente para os coordenadores preencherem.</p>${yPer(yr()).map(p => `<div class="row"><input value="${esc(p.name)}" onchange="ren('periods','${p.id}',this.value)"><button class="tg ${p.open ? "" : "off"}" onclick="togP('${p.id}')">${p.open ? "● Aberto" : "○ Fechado"}</button><button class="dan" onclick="del('period','${p.id}')">Excluir</button></div>`).join("") || '<p class="empty">Nenhum período cadastrado.</p>'}</div>` }
     const val = id => $("#" + id).value.trim();
     function addEscola() { const n = val("ne"), l = [...document.querySelectorAll(".ns:checked")].map(x => x.value); if (!n || !l.length) { $("#se").innerHTML = '<div class="err">Informe o nome e marque ao menos um ano escolar.</div>'; return } { const s = { id: uid(), name: n, lids: l }; D.schools.push(s); D.schools.sort((a, b) => (a.name || "").localeCompare(b.name || "", "pt-BR")); commit([P("schools", s, 1)]); render() } }
-    const lvOpts = (sid, sel) => { const s = sch(sid); return D.levels.filter(l => s && s.lids.includes(l.id)).map(l => `<option value="${l.id}" ${l.id == sel ? "selected" : ""}>${esc(l.name)}</option>`).join("") || '<option value="">Sem etapas vinculadas</option>' };
+    const lvOpts = (sid, sel) => {
+      const s = sch(sid);
+      const items = D.levels.filter(l => s && s.lids.includes(l.id)).map(l => `<option value="${l.id}" ${l.id == sel ? "selected" : ""}>${esc(l.name)}</option>`).join("");
+      const multi = `<option value="multi" ${sel == "multi" ? "selected" : ""}>Multiano / Multisseriada</option>`;
+      return items ? (items + multi) : multi;
+    };
     function chgTs() { $("#tl").innerHTML = lvOpts($("#ts").value) }
-    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (s && !l) return alert("Esta escola ainda não tem anos escolares vinculados. Marque-os na aba Escolas."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim(); const c = { id: uid(), yid: yr(), sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
+    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (!l) return alert("Selecione o ano escolar ou Multiano."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim(); const c = { id: uid(), yid: yr(), sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
     function saveTurma() {
       const c = cls(S.ed); if (!c) return; const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value;
       if (!n || !s || !l) return alert("Informe nome, escola e ano escolar (a escola precisa ter o ano vinculado).");
@@ -3401,7 +3455,11 @@
     }
     /* COORDENADOR (e lançamento de níveis, também usado pelo administrador) */
     let W = { list: [], r: {} };
-    const initW = cid => { W = { list: stu(cid).map(s => ({ id: s.id, name: s.name })), r: {} }; W.list.forEach(s => W.r[s.id] = [...rc(s.id, S.pid)]) };
+    const initW = cid => {
+      const parentC = cls(cid);
+      W = { list: stu(cid).map(s => ({ id: s.id, name: s.name, lid: s.lid || (parentC && parentC.lid !== "multi" ? parentC.lid : "") })), r: {} };
+      W.list.forEach(s => W.r[s.id] = [...rc(s.id, S.pid)]);
+    };
     function abrir(cid) { const ps = S.user.role == "admin" ? yPer(D.cur) : openP(); if (!ps.some(p => p.id == S.pid)) S.pid = (openP()[0] || ps[0] || {}).id; S.cid = cid; initW(cid); go(S.user.role == "admin" ? { tab: "lancar" } : {}) }
     function setP(pid) { S.pid = pid; initW(S.cid); render() }
     function coord() {
@@ -3419,7 +3477,20 @@
     }
     
     
-    let _filtroAlunosTexto = "", _filtroAlunosStatus = "all";
+    let _filtroAlunosTexto = "", _filtroAlunosStatus = "all", _filtroAlunosLid = "all";
+
+    function chgStuLid(sid, lid) {
+      const s = W.list.find(x => x.id === sid);
+      if (s) {
+        s.lid = lid;
+        aplicarFiltrosAlunos();
+      }
+    }
+    function filtrarAlunosLid(lid) {
+      _filtroAlunosLid = lid;
+      document.querySelectorAll(".btn-flid").forEach(b => b.classList.toggle("on", b.dataset.lid === lid));
+      aplicarFiltrosAlunos();
+    }
 
     function statusAluno(rec) {
       const x = rec || ["", ""];
@@ -3440,7 +3511,7 @@
           <div class="hero-turma-info">
             <h2>
               <span>${esc(c.name)}</span>
-              <span class="hero-badge-ano">${esc(lname(c.lid))}</span>${c.shift ? `<span class="hero-badge-ano" style="background:var(--os);color:#8A4A0B;border-color:rgba(244,123,32,.25)">${esc(c.shift)}</span>` : ""}
+              <span class="hero-badge-ano" style="${c.lid == 'multi' ? 'background:var(--ps);color:#800036;border-color:rgba(232,0,95,.25)' : ''}">${esc(lname(c.lid))}</span>${c.shift ? `<span class="hero-badge-ano" style="background:var(--os);color:#8A4A0B;border-color:rgba(244,123,32,.25)">${esc(c.shift)}</span>` : ""}
             </h2>
             <div class="hero-meta">
               <span>${esc(sch(c.sid)?.name || "")} · Turno: <b>${esc(c.shift || "Não informado")}</b> · Professor(a): <b>${esc(c.prof || "—")}</b></span>
@@ -3488,15 +3559,27 @@
             <button class="filter-btn ${_filtroAlunosStatus === 'pen' ? 'on' : ''}" id="fbtn_pen" onclick="filtrarAlunosStatus('pen')">Pendentes (<span id="cnt_f_pen">${n - av}</span>)</button>
           </div>
         </div>
+        ${c.lid === 'multi' ? `
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;padding:8px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--ln)">
+          <span style="font-size:.76rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-right:4px">Filtrar por Ano da Turma:</span>
+          <button class="filter-btn btn-flid ${_filtroAlunosLid === 'all' ? 'on' : ''}" data-lid="all" onclick="filtrarAlunosLid('all')">Todos os anos (${n})</button>
+          ${(sch(c.sid)?.lids || D.levels.map(l => l.id)).map(lid => {
+            const lObj = D.levels.find(l => l.id === lid);
+            if (!lObj) return "";
+            const countL = W.list.filter(s => (s.lid || "") === lid).length;
+            return `<button class="filter-btn btn-flid ${_filtroAlunosLid === lid ? 'on' : ''}" data-lid="${lid}" onclick="filtrarAlunosLid('${lid}')">${esc(lObj.name)} (${countL})</button>`;
+          }).join("")}
+        </div>` : ''}
 
         <div class="tw">
           <table class="lt">
             <thead>
               <tr>
                 <th style="width:36px">Nº</th>
-                <th style="min-width:220px">Aluno(a)</th>
-                <th style="min-width:170px">Escrita</th>
-                <th style="min-width:170px">Leitura</th>
+                <th style="min-width:200px">Aluno(a)</th>
+                ${c.lid === 'multi' ? '<th style="width:130px">Ano Escolar</th>' : ''}
+                <th style="min-width:160px">Escrita</th>
+                <th style="min-width:160px">Leitura</th>
                 <th style="width:100px">Status</th>
                 <th style="width:40px"></th>
               </tr>
@@ -3508,7 +3591,20 @@
         <p id="vazio" class="empty" ${W.list.length ? "hidden" : ""}>Nenhum aluno cadastrado ainda. Cole a lista de nomes abaixo.</p>
 
         <div style="margin-top:14px;background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:14px">
-          <label style="font-weight:700">Adicionar alunos (um nome por linha)</label>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <label style="font-weight:700">Adicionar alunos (um nome por linha)</label>
+            ${c.lid === 'multi' ? `
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:.78rem;font-weight:600;color:var(--mut)">Ano destes alunos:</span>
+              <select id="add_stu_lid" style="height:32px;font-size:.82rem;padding:0 8px;border-radius:6px;border:1px solid var(--ln);background:var(--sf);font-weight:600">
+                <option value="">Definir na lista depois</option>
+                ${(sch(c.sid)?.lids || D.levels.map(l => l.id)).map(lid => {
+                  const lObj = D.levels.find(l => l.id === lid);
+                  return lObj ? `<option value="${lObj.id}">${esc(lObj.name)}</option>` : "";
+                }).join("")}
+              </select>
+            </div>` : ''}
+          </div>
           <textarea id="nl" rows="3" style="width:100%;border-radius:10px;border:1.5px solid var(--ln);background:var(--sf);padding:10px;font:inherit;font-size:.88rem;margin-top:6px" placeholder="Maria da Silva&#10;João Pedro"></textarea>
           <button class="ghost" style="margin-top:8px;height:34px;font-size:.82rem" onclick="addAlunos()">+ Adicionar à lista</button>
         </div>
@@ -3534,9 +3630,20 @@
     const rowAluno = s => {
       const x = W.r[s.id] || ["", ""], i = W.list.indexOf(s);
       const st = statusAluno(x);
-      return `<tr id="r_${s.id}" data-name="${esc(s.name).toLowerCase()}" data-status="${st.cls}">
+      const c = cls(S.cid);
+      const isMulti = c && c.lid === "multi";
+      const sSchool = sch(c?.sid);
+      const schoolLevels = D.levels.filter(l => sSchool ? sSchool.lids.includes(l.id) : true);
+
+      return `<tr id="r_${s.id}" data-name="${esc(s.name).toLowerCase()}" data-status="${st.cls}" data-lid="${s.lid || ''}">
         <td>${i + 1}</td>
         <td><input value="${esc(s.name)}" aria-label="Nome do aluno" style="height:38px;width:100%" onchange="W.list[${i}].name=this.value.trim();upd()"></td>
+        ${isMulti ? `<td>
+          <select style="height:38px;width:100%;font-size:.8rem;padding:0 6px;border-radius:8px;border:1.5px solid var(--ln);background:var(--sf);font-weight:600;color:var(--navy)" onchange="chgStuLid('${s.id}', this.value)">
+            <option value="">Selecione o ano</option>
+            ${schoolLevels.map(l => `<option value="${l.id}" ${(s.lid || '') === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join("")}
+          </select>
+        </td>` : ''}
         <td>${selN(s.id, 0, ESC, x[0])}</td>
         <td>${selN(s.id, 1, LEI, x[1])}</td>
         <td><span id="st_${s.id}" class="badge-status-row ${st.cls}">${st.txt}</span></td>
@@ -3606,7 +3713,9 @@
         const matchSt = _filtroAlunosStatus === "all" ||
                         (_filtroAlunosStatus === "ok" && status === "ok") ||
                         (_filtroAlunosStatus === "pen" && status !== "ok");
-        const show = matchTxt && matchSt;
+        const rLid = r.dataset.lid || "";
+        const matchLid = _filtroAlunosLid === "all" || rLid === _filtroAlunosLid;
+        const show = matchTxt && matchSt && matchLid;
         r.style.display = show ? "" : "none";
         if (show) visiveis++;
       });
@@ -3624,7 +3733,22 @@
     function addAlunos() {
       const t = $("#nl").value.split("\n").map(x => x.trim()).filter(Boolean);
       if (!t.length) return;
-      t.forEach(n => { const s = { id: uid(), name: n }; W.list.push(s); W.r[s.id] = ["", ""]; });
+      const c = cls(S.cid);
+      const isMulti = c && c.lid === "multi";
+      const selLid = ($("#add_stu_lid") ? $("#add_stu_lid").value : "") || (!isMulti && c ? c.lid : "");
+      t.forEach(n => {
+        let cleanName = n, lid = selLid;
+        const m = n.match(/\s*[-–(\[]\s*([1-5]º?\s*Ano|[1-5]º?)\s*[\)\]]?/i);
+        if (m) {
+          const num = m[1].replace(/\D/g, "");
+          const found = D.levels.find(l => l.name.includes(num + "º"));
+          if (found) lid = found.id;
+          cleanName = n.replace(m[0], "").trim();
+        }
+        const s = { id: uid(), name: cleanName, lid: lid };
+        W.list.push(s);
+        W.r[s.id] = ["", ""];
+      });
       $("#nl").value = "";
       render();
       window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
@@ -3742,7 +3866,7 @@
       if (faltam && !confirm(faltam + " aluno(s) estão sem escrita ou leitura. Salvar mesmo assim (preenchimento parcial)?")) return;
       const novos = new Set(list.map(s => s.id));
       stu(c.id).forEach(s => { if (!novos.has(s.id)) delete D.rec[s.id]; });
-      D.students = D.students.filter(s => s.cid != c.id).concat(list.map(s => ({ id: s.id, cid: c.id, name: s.name })));
+      D.students = D.students.filter(s => s.cid != c.id).concat(list.map(s => ({ id: s.id, cid: c.id, name: s.name, lid: s.lid || (c.lid !== "multi" ? c.lid : "") })));
       list.forEach(s => {
         D.rec[s.id] = D.rec[s.id] || {};
         if (r[s.id]) D.rec[s.id][pid] = r[s.id];
@@ -3753,7 +3877,14 @@
       botoesSalvar.forEach(btn => { btn.disabled = true; btn.textContent = "Salvando…"; });
 
       const res = await commit([
-        { t: "stu", cid: c.id, list: list.map(s => ({ id: s.id, name: s.name })) },
+        { t: "stu", cid: c.id, list: list.map(s => {
+          let cleanName = (s.name || "").replace(/\s*[-–(\[]\s*([1-5]º?\s*Ano|[1-5]º?)\s*[\)\]]?/gi, "").trim();
+          const finalLid = s.lid || (c.lid !== "multi" ? c.lid : "");
+          if (c.lid === "multi" && finalLid) {
+            cleanName = cleanName + " [" + lname(finalLid) + "]";
+          }
+          return { id: s.id, name: cleanName, lid: finalLid };
+        }) },
         { t: "rec", cid: c.id, pid, r }
       ], true);
 
