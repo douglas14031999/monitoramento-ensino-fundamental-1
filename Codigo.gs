@@ -142,7 +142,15 @@ function folha_(nome) {
   } else {
     if (sh.getMaxColumns() < nc) {
       sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
-      sh.getRange(1, 1, 1, nc).setValues([SPEC[nome].f.map(c => c[0])]).setFontWeight('bold').setBackground('#E4F2EA');
+    }
+    const curHeaders = sh.getRange(1, 1, 1, nc).getValues()[0];
+    const expHeaders = SPEC[nome].f.map(c => c[0]);
+    let mudou = false;
+    for (let i = 0; i < expHeaders.length; i++) {
+      if (curHeaders[i] !== expHeaders[i]) { mudou = true; break; }
+    }
+    if (mudou) {
+      sh.getRange(1, 1, 1, nc).setValues([expHeaders]).setFontWeight('bold').setBackground('#E4F2EA');
     }
   }
   return sh;

@@ -2117,6 +2117,31 @@
       fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ a: "ping" }), mode: "no-cors" }).catch(() => { });
     }
 
+    function normalizeShift(str) {
+      if (!str) return "";
+      const s = String(str).trim().toLowerCase();
+      if (s.includes("mat") || s.includes("manh")) return "Matutino";
+      if (s.includes("vesp") || s.includes("tard")) return "Vespertino";
+      if (s.includes("not") || s.includes("noit")) return "Noturno";
+      if (s.includes("integ")) return "Integral";
+      return "";
+    }
+    function normalizarTurmas(classes) {
+      if (!classes || !Array.isArray(classes)) return;
+      classes.forEach(c => {
+        if (!c.shift && c.name) {
+          const m = c.name.match(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/i);
+          if (m) {
+            c.shift = normalizeShift(m[1]);
+            c.name = c.name.replace(m[0], "").trim();
+          }
+        } else if (c.shift && c.name) {
+          c.shift = normalizeShift(c.shift) || c.shift;
+          c.name = c.name.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+        }
+      });
+    }
+
     try {
       TOK = localStorage.getItem(TK) || "";
       const cached = localStorage.getItem(CK);
@@ -2124,6 +2149,7 @@
         const r = JSON.parse(cached);
         if (r && r.data) {
           D = Object.assign(vazio(), r.data);
+          normalizarTurmas(D.classes);
       if (r.role == "admin") {
             S.user = { role: "admin" };
             S.tab = "resumo";
@@ -2165,10 +2191,26 @@
         return r
       })
     }
-    const ser = (k, o) => { const c = JSON.parse(JSON.stringify(o)); if (k == "levels") c.ord = D.levels.indexOf(o); if (k == "inds") c.ord = D.inds.indexOf(o); return c };
+    const ser = (k, o) => {
+      const c = JSON.parse(JSON.stringify(o));
+      if (k == "levels") c.ord = D.levels.indexOf(o);
+      if (k == "inds") c.ord = D.inds.indexOf(o);
+      if (k == "classes") {
+        const sh = normalizeShift(c.shift);
+        const cleanName = (c.name || "").replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+        if (sh) {
+          c.name = cleanName + " [" + sh + "]";
+          c.shift = sh;
+        } else {
+          c.name = cleanName;
+        }
+      }
+      return c;
+    };
     const P = (k, o, n) => ({ t: "put", k, o: ser(k, o), n: n ? 1 : 0 }), X = (k, id) => ({ t: "del", k, id }), ordOps = k => D[k].map(o => P(k, o));
     function adopt(r) {
       D = Object.assign(vazio(), r.data);
+      normalizarTurmas(D.classes);
       S.user = r.role == "admin" ? { role: "admin" } : { role: "coord", name: r.name, sids: D.schools.map(s => s.id) };
       if (S.sid && !sch(S.sid)) { S.sid = null; S.cid = null }
       if (S.cid && !D.classes.some(c => c.id == S.cid)) S.cid = null;
@@ -2504,7 +2546,7 @@
         <div><label>Escola</label><select id="ts" onchange="chgTs()">${D.schools.map(s => `<option value="${s.id}" ${s.id == sid ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>
         <div><label>Nome da turma</label><input id="tn" placeholder="Ex.: 3º A" value="${e ? esc(e.name) : ""}"></div>
         <div><label>Ano escolar</label><select id="tl">${lvOpts(sid, e?.lid)}</select></div>
-        <div><label>Turno</label><select id="tsh"><option value="">Selecione o turno</option>${TURNOS.map(t => `<option value="${t}" ${e && e.shift == t ? "selected" : ""}>${t}</option>`).join("")}</select></div>
+        <div><label>Turno</label><select id="tsh"><option value="">Selecione o turno</option>${TURNOS.map(t => `<option value="${t}" ${e && (e.shift == t || normalizeShift(e.shift) == t) ? "selected" : ""}>${t}</option>`).join("")}</select></div>
         <div><label>Professor(a)</label><input id="tp" placeholder="Nome do professor(a)" value="${e ? esc(e.prof || "") : ""}"></div>
       </div>`, e ? `<button class="btn" onclick="saveTurma()">Salvar alterações</button>${cancelBtn}` : `<button class="btn" onclick="addTurma()">Criar turma</button>`) + `<div class="card"><h3>Turmas · ${esc(yname(yr()))}</h3><div class="tw"><table><tr><th>Escola</th><th>Turma</th><th>Ano</th><th>Turno</th><th>Professor(a)</th><th>Alunos</th><th></th></tr>${yCl(yr()).map(c => `<tr ${S.ed == c.id ? 'style="background:var(--gs)"' : ""}><td>${esc(sch(c.sid)?.name || "")}</td><td><b>${esc(c.name)}</b></td><td>${esc(lname(c.lid))}</td><td><span class="badge" style="margin:0;font-size:.78rem">${esc(c.shift || "—")}</span></td><td>${esc(c.prof || "—")}</td><td>${stu(c.id).length}</td><td style="text-align:right;white-space:nowrap"><button class="ghost" style="height:34px;padding:0 12px" onclick="abrir('${c.id}')">Lançar níveis</button> ${editBtn(c.id)}<button class="dan" onclick="del('class','${c.id}')">Excluir</button></td></tr>`).join("")}</table>${yCl(yr()).length ? "" : '<p class="empty">Nenhuma turma neste ano letivo. Crie uma turma ou copie de outro ano na aba <b>Ano letivo</b>.</p>'}</div></div>`
     }
@@ -2606,13 +2648,14 @@
     function addEscola() { const n = val("ne"), l = [...document.querySelectorAll(".ns:checked")].map(x => x.value); if (!n || !l.length) { $("#se").innerHTML = '<div class="err">Informe o nome e marque ao menos um ano escolar.</div>'; return } { const s = { id: uid(), name: n, lids: l }; D.schools.push(s); D.schools.sort((a, b) => (a.name || "").localeCompare(b.name || "", "pt-BR")); commit([P("schools", s, 1)]); render() } }
     const lvOpts = (sid, sel) => { const s = sch(sid); return D.levels.filter(l => s && s.lids.includes(l.id)).map(l => `<option value="${l.id}" ${l.id == sel ? "selected" : ""}>${esc(l.name)}</option>`).join("") || '<option value="">Sem etapas vinculadas</option>' };
     function chgTs() { $("#tl").innerHTML = lvOpts($("#ts").value) }
-    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (s && !l) return alert("Esta escola ainda não tem anos escolares vinculados. Marque-os na aba Escolas."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const c = { id: uid(), yid: yr(), sid: s, name: n, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
+    function addTurma() { const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value; if (s && !l) return alert("Esta escola ainda não tem anos escolares vinculados. Marque-os na aba Escolas."); if (!sh) return alert("Selecione o turno da turma."); if (n && s && l) { const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim(); const c = { id: uid(), yid: yr(), sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }; D.classes.push(c); commit([P("classes", c, 1)]); render() } }
     function saveTurma() {
       const c = cls(S.ed); if (!c) return; const n = val("tn"), s = $("#ts").value, l = $("#tl").value, sh = $("#tsh").value;
       if (!n || !s || !l) return alert("Informe nome, escola e ano escolar (a escola precisa ter o ano vinculado).");
       if (!sh) return alert("Selecione o turno da turma.");
       if (s != c.sid && !confirm("Mudar a escola leva a turma, com alunos e níveis, para a nova escola. Continuar?")) return;
-      Object.assign(c, { sid: s, name: n, lid: l, prof: val("tp"), shift: sh }); commit([P("classes", c)]); go({ ed: null })
+      const cleanName = n.replace(/\s*[-–(\[]\s*(Matutino|Vespertino|Noturno|Integral|Manhã|Tarde|Noite)\s*[\)\]]?/gi, "").trim();
+      Object.assign(c, { sid: s, name: cleanName, lid: l, prof: val("tp"), shift: sh }); commit([P("classes", c)]); go({ ed: null })
     }
     function dropClassData(cid) { stu(cid).forEach(s => delete D.rec[s.id]); D.students = D.students.filter(s => s.cid != cid) }
     function saveCoord() {
