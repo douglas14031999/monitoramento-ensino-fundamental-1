@@ -1663,27 +1663,26 @@
     .dg th:not(.we):not(.wl) { background: var(--bg) }
     .dg tr.tot td { background: var(--gs); font-weight: 800 }
 
-    /* ===== INTERFACE MODERNA DE LANÇAMENTO E AVALIAÇÃO · FUNDAMENTAL I ===== */
+    /* ===== INTERFACE DE LANÇAMENTO E AVALIAÇÃO · FUNDAMENTAL I ===== */
     .hero-turma {
       background: var(--sf);
       border: 1px solid var(--ln);
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px -4px rgba(23,63,49,.08);
-      position: relative;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 18px -4px rgba(23,63,49,.06);
     }
     .hero-turma-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 18px;
+      gap: 14px;
+      margin-bottom: 14px;
     }
     .hero-turma-info h2 {
-      margin: 0 0 6px;
-      font-size: 1.5rem;
+      margin: 0 0 4px;
+      font-size: 1.35rem;
       font-weight: 800;
       color: var(--navy);
       display: flex;
@@ -1692,29 +1691,20 @@
       flex-wrap: wrap;
     }
     .hero-badge-ano {
-      font-size: .82rem;
+      font-size: .8rem;
       font-weight: 700;
       background: var(--gs);
       color: var(--gd);
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 99px;
       border: 1px solid rgba(47,125,91,.2);
     }
     .hero-meta {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
       font-size: .88rem;
       color: var(--mut);
     }
-    .hero-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
     .hero-prog-box {
-      min-width: 240px;
+      min-width: 220px;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
@@ -1722,7 +1712,7 @@
     }
     .prog-track {
       width: 100%;
-      height: 8px;
+      height: 7px;
       background: var(--ln);
       border-radius: 99px;
       overflow: hidden;
@@ -1730,15 +1720,15 @@
     }
     .prog-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--g), #4FB586);
+      background: var(--g);
       border-radius: 99px;
       transition: width .3s ease;
     }
 
-    /* Pílulas de Bimestres com visual moderno */
+    /* Pílulas de Bimestres com visual nativo */
     .bimes-pills {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       padding-top: 14px;
       border-top: 1px solid var(--ln);
@@ -1747,14 +1737,11 @@
       border: 1.5px solid var(--ln);
       background: var(--sf);
       border-radius: 99px;
-      padding: 8px 18px;
-      font-weight: 700;
+      padding: 7px 16px;
+      font-weight: 600;
       font-size: .88rem;
       color: var(--ink);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
       transition: all .2s ease;
     }
     .bimes-pill:hover {
@@ -1765,180 +1752,108 @@
       border-color: var(--gd);
       background: var(--g);
       color: #fff;
-      box-shadow: 0 4px 14px -3px rgba(47,125,91,.4);
     }
 
     /* Painel de Estatísticas da Turma */
     .diag-kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .diag-kpi-card {
       background: var(--bg);
       border: 1px solid var(--ln);
-      border-radius: 14px;
-      padding: 14px 16px;
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
-    .diag-kpi-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,.04);
+      border-radius: 12px;
+      padding: 12px 14px;
     }
     .diag-kpi-label {
       font-size: .78rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .03em;
       color: var(--mut);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
     .diag-kpi-num {
-      font-size: 1.45rem;
+      font-size: 1.35rem;
       font-weight: 800;
       color: var(--navy);
     }
     .diag-kpi-sub {
-      font-size: .78rem;
+      font-size: .76rem;
       color: var(--mut);
-      margin-top: 2px;
     }
 
     .diag-section {
-      background: var(--sf);
-      border: 1px solid var(--ln);
-      border-radius: 16px;
-      padding: 18px;
       margin-bottom: 16px;
     }
     .diag-section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .diag-title-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-    .diag-title-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .95rem;
+      gap: 6px;
     }
     .diag-title-text {
-      font-size: 1.05rem;
-      font-weight: 800;
+      font-size: .95rem;
+      font-weight: 700;
       color: var(--navy);
     }
     .diag-grid-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
     }
     .diag-card {
       background: var(--sf);
       border: 1px solid var(--ln);
-      border-radius: 12px;
-      padding: 10px 12px;
-      position: relative;
-      overflow: hidden;
-      transition: all .2s ease;
-    }
-    .diag-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,.06);
-    }
-    .diag-card-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 5px;
-      height: 100%;
+      border-left: 5px solid var(--ln);
+      border-radius: 8px;
+      padding: 8px 10px;
     }
     .diag-card-num {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       line-height: 1.1;
-      margin-left: 6px;
     }
     .diag-card-name {
       font-size: .78rem;
-      font-weight: 700;
-      color: var(--ink);
-      margin: 4px 0 2px 6px;
+      color: var(--mut);
+      margin: 2px 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .diag-card-pct {
-      font-size: .74rem;
+      font-size: .72rem;
       font-weight: 600;
-      margin-left: 6px;
     }
 
-    /* Barra de progresso segmentada */
-    .bar-modern {
-      height: 10px;
-      border-radius: 99px;
-      display: flex;
-      overflow: hidden;
-      background: var(--ln);
-      box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
-    }
-    .bar-modern i {
-      height: 100%;
-      display: block;
-      transition: width .3s ease;
-    }
-
-    /* Barra de ferramentas da tabela de alunos */
+    /* Barra de ferramentas nativa */
     .table-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding: 12px 16px;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding: 10px 14px;
       background: var(--bg);
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid var(--ln);
     }
-    .search-box {
-      position: relative;
-      flex: 1 1 240px;
-      max-width: 380px;
-    }
-    .search-box svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
-      color: var(--mut);
-      pointer-events: none;
-    }
     .search-box input {
-      width: 100%;
-      height: 40px;
-      padding-left: 36px;
-      padding-right: 12px;
-      border-radius: 10px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
       border: 1.5px solid var(--ln);
       background: var(--sf);
-      font-size: .88rem;
-      font-weight: 500;
-      transition: border-color .2s ease;
+      font-size: .86rem;
+      width: 260px;
     }
     .search-box input:focus {
       border-color: var(--g);
@@ -1947,22 +1862,17 @@
     .filter-pills {
       display: flex;
       gap: 6px;
-      flex-wrap: wrap;
     }
     .filter-btn {
-      height: 34px;
-      padding: 0 14px;
+      height: 32px;
+      padding: 0 12px;
       border-radius: 99px;
       border: 1px solid var(--ln);
       background: var(--sf);
-      font-size: .82rem;
-      font-weight: 700;
+      font-size: .8rem;
+      font-weight: 600;
       color: var(--mut);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all .2s ease;
     }
     .filter-btn:hover {
       border-color: var(--g);
@@ -1973,139 +1883,27 @@
       color: #fff;
       border-color: var(--ink);
     }
-    .toolbar-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
 
-    /* Tabela de Alunos Refinada */
-    .table-students {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 8px;
-    }
-    .table-students thead th {
-      font-size: .78rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--mut);
-      padding: 8px 12px;
-      border: none;
-      background: transparent;
-      text-align: left;
-    }
-    .table-students tbody tr {
-      background: var(--sf);
-      box-shadow: 0 2px 6px rgba(0,0,0,.02);
-      transition: all .2s ease;
-    }
-    .table-students tbody tr:hover {
-      box-shadow: 0 4px 14px rgba(0,0,0,.06);
-      transform: translateY(-1px);
-    }
-    .table-students tbody td {
-      padding: 10px 12px;
-      border: none;
-      vertical-align: middle;
-      border-top: 1px solid var(--ln);
-      border-bottom: 1px solid var(--ln);
-    }
-    .table-students tbody td:first-child {
-      border-left: 1px solid var(--ln);
-      border-radius: 12px 0 0 12px;
-    }
-    .table-students tbody td:last-child {
-      border-right: 1px solid var(--ln);
-      border-radius: 0 12px 12px 0;
-    }
-    .row-index {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--mut);
-      font-weight: 800;
-      font-size: .82rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .student-cell {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 220px;
-    }
-    .student-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: var(--gs);
-      color: var(--gd);
-      font-weight: 800;
-      font-size: .78rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      border: 1px solid rgba(47,125,91,.2);
-    }
-    .student-input {
-      width: 100%;
-      height: 38px;
-      border: 1.5px solid transparent;
-      border-radius: 8px;
-      padding: 0 8px;
-      font-weight: 700;
-      font-size: .92rem;
-      color: var(--ink);
-      background: transparent;
-      transition: all .2s ease;
-    }
-    .student-input:hover {
-      border-color: var(--ln);
-      background: var(--bg);
-    }
-    .student-input:focus {
-      border-color: var(--g);
-      background: var(--sf);
-      outline: none;
-    }
-
-    /* Select moderno com indicador de nível */
+    /* Select nativo refinado */
     .eval-select {
-      height: 42px;
-      min-width: 175px;
+      height: 38px;
       width: 100%;
-      border-radius: 10px;
+      min-width: 170px;
+      border-radius: 8px;
       border: 1.5px solid var(--ln);
-      padding: 0 32px 0 14px;
-      font-weight: 700;
-      font-size: .88rem;
+      padding: 0 10px;
+      font-weight: 600;
+      font-size: .86rem;
       cursor: pointer;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235E7268' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      transition: all .2s ease;
-    }
-    .eval-select:hover {
-      border-color: var(--g);
-    }
-    .eval-select:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(47,125,91,.2);
+      background-color: var(--sf);
+      color: var(--ink);
     }
 
     .badge-status-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      display: inline-block;
       font-size: .76rem;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 99px;
       white-space: nowrap;
     }
@@ -2123,72 +1921,32 @@
       border: 1px solid var(--ln);
     }
 
-    .btn-row-del {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--mut);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all .2s ease;
-    }
-    .btn-row-del:hover {
-      background: var(--ps);
-      color: var(--p);
-      border-color: rgba(232,0,95,.2);
-    }
-
     /* Barra Sticky Flutuante para Salvar */
     .sticky-save-bar {
       position: sticky;
-      bottom: 20px;
+      bottom: 16px;
       z-index: 100;
-      background: rgba(255,255,255,.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: var(--sf);
       border: 1.5px solid var(--ln);
-      border-radius: 16px;
-      padding: 12px 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+      border-radius: 14px;
+      padding: 12px 18px;
+      box-shadow: 0 8px 24px rgba(23,63,49,.12);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 20px;
-    }
-    :root[data-theme="dark"] .sticky-save-bar {
-      background: rgba(22,35,29,.94);
-    }
-    .ssb-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      margin-top: 18px;
     }
     .ssb-info b {
-      font-size: .95rem;
+      font-size: .92rem;
       color: var(--navy);
     }
     .ssb-info small {
-      font-size: .82rem;
+      font-size: .8rem;
       color: var(--mut);
     }
-
-    .lt td { padding: 6px 6px } .lt select { min-width: 150px }
-    .po { display: none }
-    @media print {
-      @page { size: A4 landscape; margin: 10mm }
-      .po { display: block !important; margin: 0 0 10px; font-size: 10pt; border-bottom: 3px solid #2F7D5B; padding-bottom: 6px }
-      .top, .band { display: none !important }
-      .dg table { font-size: 8pt } .dg th, .dg td { padding: 3px 4px }
-      .dg th.we { background: #FFEBDA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
-      .dg th.wl, .dg tr.tot td { background: #E4F2EA !important; -webkit-print-color-adjust: exact; print-color-adjust: exact }
-      .bar i { -webkit-print-color-adjust: exact; print-color-adjust: exact }
-    }
+  
   </style>
 </head>
 
@@ -2754,19 +2512,13 @@
       if (!op.find(p => p.id == S.pid)) S.pid = op[0].id;
       if (!S.cid) {
         const cl = D.classes.filter(c => c.sid == S.sid && c.yid == D.cur);
-        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><div class="hello" style="margin:0"><h2>${esc(s.name)}</h2><p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p></div><button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">📊 Ver diagnóstico da escola</button></div><div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div><div class="list">${cl.map(c => { const st = classStatus(c.id, S.pid); return `<button class="item" onclick="abrir('${c.id}')"><h4>${esc(c.name)} · ${esc(lname(c.lid))}</h4><small>${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small><br>${st.status == "completa" ? `<span class="badge">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x">${st.total ? "Pendente" : "Sem alunos"}</span>`}</button>` }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}</div>`
+        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><div class="hello" style="margin:0"><h2>${esc(s.name)}</h2><p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p></div><button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">Ver diagnóstico da escola</button></div><div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div><div class="list">${cl.map(c => { const st = classStatus(c.id, S.pid); return `<button class="item" onclick="abrir('${c.id}')"><h4>${esc(c.name)} · ${esc(lname(c.lid))}</h4><small>${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small><br>${st.status == "completa" ? `<span class="badge">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x">${st.total ? "Pendente" : "Sem alunos"}</span>`}</button>` }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}</div>`
       }
       return `<button class="crumb" onclick="go({cid:null})">← Voltar às turmas</button>` + lancar()
     }
     
+    
     let _filtroAlunosTexto = "", _filtroAlunosStatus = "all";
-
-    function iniciais(nome) {
-      const p = (nome || "").trim().split(/\s+/).filter(Boolean);
-      if (!p.length) return "AL";
-      if (p.length === 1) return p[0].substring(0, 2).toUpperCase();
-      return (p[0][0] + p[p.length - 1][0]).toUpperCase();
-    }
 
     function statusAluno(rec) {
       const x = rec || ["", ""];
@@ -2790,51 +2542,43 @@
               <span class="hero-badge-ano">${esc(lname(c.lid))}</span>
             </h2>
             <div class="hero-meta">
-              <span class="hero-meta-item">
-                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h2M6 15h2M16 11h2M16 15h2M10 21V3h4v18"/></svg>
-                <b>${esc(sch(c.sid)?.name || "")}</b>
-              </span>
-              <span class="hero-meta-item">
-                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Professor(a): <b>${esc(c.prof || "—")}</b>
-              </span>
+              <span>${esc(sch(c.sid)?.name || "")} · Professor(a): <b>${esc(c.prof || "—")}</b></span>
             </div>
           </div>
           <div class="hero-prog-box">
             <div id="prog"></div>
             <div class="prog-track"><div class="prog-fill" id="prog-bar-fill" style="width:${pctAv}%"></div></div>
-            <div style="display:flex;gap:8px;margin-top:4px">
-              <button class="btn" onclick="salvar()" style="height:36px;padding:0 14px;font-size:.82rem">💾 Salvar alterações</button>
+            <div style="display:flex;gap:8px;margin-top:2px">
+              <button class="btn" onclick="salvar()" style="height:34px;padding:0 14px;font-size:.82rem">Salvar alterações</button>
             </div>
           </div>
         </div>
         <div class="bimes-pills">
           ${ps.map(p => `<button class="bimes-pill ${p.id == S.pid ? "on" : ""}" onclick="setP('${p.id}')">
-            <span>${esc(p.name)}</span>
+            ${esc(p.name)}
           </button>`).join("")}
         </div>
       </div>
 
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px">
-          <h3 style="margin:0">📊 Diagnóstico Rápido da Turma</h3>
-          <span style="font-size:.84rem;color:var(--mut)">Cálculo em tempo real para o período selecionado</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <h3 style="margin:0">Resumo da turma</h3>
+          <span style="font-size:.84rem;color:var(--mut)">Cálculo automático do período selecionado</span>
         </div>
         <div id="sum"></div>
       </div>
 
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
           <div>
-            <h3 style="margin:0 0 4px">Alunos · Escrita e Leitura</h3>
-            <p style="margin:0;font-size:.85rem;color:var(--mut)">Selecione o nível de escrita e leitura de cada aluno. As alterações refletem imediatamente no diagnóstico acima.</p>
+            <h3 style="margin:0 0 2px">Alunos · escrita e leitura</h3>
+            <p style="margin:0;font-size:.85rem;color:var(--mut)">Selecione o nível de escrita e leitura de cada aluno.</p>
           </div>
-          <button class="ghost" style="height:36px;font-size:.82rem" onclick="ordenarAlunosAZ()">🔤 Ordenar A–Z</button>
+          <button class="ghost" style="height:34px;font-size:.82rem" onclick="ordenarAlunosAZ()">Ordenar A–Z</button>
         </div>
 
         <div class="table-toolbar">
           <div class="search-box">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
             <input type="text" placeholder="Buscar aluno por nome..." value="${_filtroAlunosTexto}" oninput="filtrarAlunosTexto(this.value)">
           </div>
           <div class="filter-pills">
@@ -2845,32 +2589,27 @@
         </div>
 
         <div class="tw">
-          <table class="table-students">
+          <table class="lt">
             <thead>
               <tr>
-                <th style="width:44px">Nº</th>
-                <th style="min-width:240px">Aluno(a)</th>
-                <th style="min-width:180px">Nível de Escrita</th>
-                <th style="min-width:180px">Nível de Leitura</th>
-                <th style="width:110px">Status</th>
-                <th style="width:44px"></th>
+                <th style="width:36px">Nº</th>
+                <th style="min-width:220px">Aluno(a)</th>
+                <th style="min-width:170px">Escrita</th>
+                <th style="min-width:170px">Leitura</th>
+                <th style="width:100px">Status</th>
+                <th style="width:40px"></th>
               </tr>
             </thead>
             <tbody id="rows">${W.list.map(rowAluno).join("")}</tbody>
           </table>
         </div>
 
-        <p id="vazio" class="empty" ${W.list.length ? "hidden" : ""}>Nenhum aluno cadastrado ainda nesta turma. Cole a lista de nomes abaixo.</p>
+        <p id="vazio" class="empty" ${W.list.length ? "hidden" : ""}>Nenhum aluno cadastrado ainda. Cole a lista de nomes abaixo.</p>
 
-        <div style="margin-top:16px;background:var(--bg);border:1px solid var(--ln);border-radius:14px;padding:16px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="font-size:1.1rem">📋</span>
-            <label style="margin:0;font-weight:700">Adicionar novos alunos à turma</label>
-          </div>
-          <textarea id="nl" rows="3" style="width:100%;border-radius:10px;border:1.5px solid var(--ln);background:var(--sf);padding:10px;font:inherit;font-size:.88rem" placeholder="Cole ou digite um nome de aluno por linha:\nMaria da Silva\nJoão Pedro de Oliveira"></textarea>
-          <div style="margin-top:10px;display:flex;gap:10px">
-            <button class="btn" style="height:38px;padding:0 16px;font-size:.84rem" onclick="addAlunos()">+ Adicionar à turma</button>
-          </div>
+        <div style="margin-top:14px;background:var(--bg);border:1px solid var(--ln);border-radius:12px;padding:14px">
+          <label style="font-weight:700">Adicionar alunos (um nome por linha)</label>
+          <textarea id="nl" rows="3" style="width:100%;border-radius:10px;border:1.5px solid var(--ln);background:var(--sf);padding:10px;font:inherit;font-size:.88rem;margin-top:6px" placeholder="Maria da Silva&#10;João Pedro"></textarea>
+          <button class="ghost" style="margin-top:8px;height:34px;font-size:.82rem" onclick="addAlunos()">+ Adicionar à lista</button>
         </div>
 
         <div id="fe" style="margin-top:14px"></div>
@@ -2878,7 +2617,6 @@
 
       <div class="sticky-save-bar" id="stickySave">
         <div class="ssb-info">
-          <span style="font-size:1.4rem">💾</span>
           <div>
             <b id="ssb-progress">${av} de ${n} alunos avaliados (${pctAv}%)</b><br>
             <small>${esc(c.name)} · ${esc(sch(c.sid)?.name || "")}</small>
@@ -2886,7 +2624,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span class="ok" id="fo" style="font-weight:700;font-size:.9rem"></span>
-          <button class="btn" id="sf" onclick="salvar()" style="min-width:190px;height:42px;font-size:.92rem">Salvar preenchimento</button>
+          <button class="btn" id="sf" onclick="salvar()" style="min-width:180px;height:38px;font-size:.9rem">Salvar preenchimento</button>
         </div>
       </div>
       `;
@@ -2896,21 +2634,12 @@
       const x = W.r[s.id] || ["", ""], i = W.list.indexOf(s);
       const st = statusAluno(x);
       return `<tr id="r_${s.id}" data-name="${esc(s.name).toLowerCase()}" data-status="${st.cls}">
-        <td><span class="row-index">${i + 1}</span></td>
-        <td>
-          <div class="student-cell">
-            <span class="student-avatar">${iniciais(s.name)}</span>
-            <input class="student-input" value="${esc(s.name)}" aria-label="Nome do aluno" onchange="W.list[${i}].name=this.value.trim();upd()">
-          </div>
-        </td>
+        <td>${i + 1}</td>
+        <td><input value="${esc(s.name)}" aria-label="Nome do aluno" style="height:38px;width:100%" onchange="W.list[${i}].name=this.value.trim();upd()"></td>
         <td>${selN(s.id, 0, ESC, x[0])}</td>
         <td>${selN(s.id, 1, LEI, x[1])}</td>
         <td><span id="st_${s.id}" class="badge-status-row ${st.cls}">${st.txt}</span></td>
-        <td style="text-align:center">
-          <button class="btn-row-del" title="Remover aluno da turma" onclick="rmAluno(${i})">
-            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        </td>
+        <td style="text-align:center"><button class="dan" title="Remover aluno" onclick="rmAluno(${i})">✕</button></td>
       </tr>`;
     };
 
@@ -2921,7 +2650,7 @@
         ? `background-color:${cor}15;border-color:${cor};color:${cor};font-weight:700`
         : `background-color:var(--sf);border-color:var(--ln);color:var(--mut)`;
       return `<select class="eval-select" data-a="${aid}" data-k="${k}" style="${style}" onchange="setNivel('${aid}',${k},this)">
-        <option value="">— Selecione o nível —</option>
+        <option value="">—</option>
         ${L.map((e, i) => `<option value="${e[0]}" ${e[0] == v ? "selected" : ""} style="color:var(--ink);background:var(--sf);font-weight:600">${e[1]}</option>`).join("")}
       </select>`;
     };
@@ -3020,28 +2749,27 @@
       const wCounts = cnt(ESC, 0), rCounts = cnt(LEI, 1);
       const sw = wCounts.reduce((a, b) => a + b, 0);
       const sr = rCounts.reduce((a, b) => a + b, 0);
-      const alfCount = (wCounts[4] || 0) + (wCounts[5] || 0); // Alfabético + Ortográfico
-      const fluCount = (rCounts[4] || 0) + (rCounts[5] || 0); // Iniciante + Fluente
+      const alfCount = (wCounts[4] || 0) + (wCounts[5] || 0);
+      const fluCount = (rCounts[4] || 0) + (rCounts[5] || 0);
       const pctAlf = sw ? Math.round((alfCount / sw) * 100) : 0;
       const pctFlu = sr ? Math.round((fluCount / sr) * 100) : 0;
 
-      // Render da Seção de Níveis
-      const renderSec = (titulo, icone, bgIco, colIco, LL, a, sTotal) => `
+      // Render da Seção de Níveis com visual nativo
+      const renderSec = (titulo, dotCor, LL, a, sTotal) => `
         <div class="diag-section">
           <div class="diag-section-header">
             <div class="diag-title-group">
-              <span class="diag-title-icon" style="background:${bgIco};color:${colIco}">${icone}</span>
+              <i class="dot" style="background:${dotCor}"></i>
               <span class="diag-title-text">${titulo}</span>
             </div>
-            <span style="font-size:.82rem;font-weight:700;color:var(--mut)">${sTotal} de ${n} avaliados</span>
+            <span style="font-size:.82rem;color:var(--mut)">${sTotal} avaliados</span>
           </div>
           <div class="diag-grid-cards">
             ${LL.map((e, i) => `
-              <div class="diag-card" style="background:linear-gradient(180deg, ${COR[i]}0C 0%, var(--sf) 100%)">
-                <div class="diag-card-bar" style="background:${COR[i]}"></div>
-                <div class="diag-card-num" style="color:var(--navy)">${a[i]}</div>
-                <div class="diag-card-name" title="${e[1]}">${e[2]}</div>
-                <div class="diag-card-pct" style="color:${COR[i]}">${sTotal ? pct(a[i], sTotal) : 0}% da turma</div>
+              <div class="diag-card" style="border-left-color:${COR[i]}">
+                <b class="diag-card-num" style="color:var(--navy)">${a[i]}</b><br>
+                <small class="diag-card-name" style="color:var(--mut)">${e[2]}</small>
+                <div class="diag-card-pct" style="color:${COR[i]}">${sTotal ? pct(a[i], sTotal) : 0}%</div>
               </div>
             `).join("")}
           </div>
@@ -3052,13 +2780,13 @@
       sm.innerHTML = `
         <div class="diag-kpi-grid">
           <div class="diag-kpi-card">
-            <div class="diag-kpi-label">Total de Alunos</div>
+            <div class="diag-kpi-label">Total de alunos</div>
             <div class="diag-kpi-num">${n}</div>
             <div class="diag-kpi-sub">Matriculados na turma</div>
           </div>
           <div class="diag-kpi-card">
-            <div class="diag-kpi-label">Avaliados Completos</div>
-            <div class="diag-kpi-num" style="color:var(--gd)">${av} <small style="font-size:.85rem;color:var(--mut)">(${pctAv}%)</small></div>
+            <div class="diag-kpi-label">Avaliados completos</div>
+            <div class="diag-kpi-num" style="color:var(--gd)">${av} <small style="font-size:.82rem;color:var(--mut)">(${pctAv}%)</small></div>
             <div class="diag-kpi-sub">${n - av} pendente(s)</div>
           </div>
           <div class="diag-kpi-card">
@@ -3072,15 +2800,15 @@
             <div class="diag-kpi-sub">${fluCount} de ${sr || 0} alunos com leitura</div>
           </div>
         </div>
-        ${renderSec("Níveis de Escrita", "✍️", "#FFEBDA", "#8A4A0B", ESC, wCounts, sw)}
-        ${renderSec("Níveis de Leitura", "📖", "#E4F2EA", "#1F5C43", LEI, rCounts, sr)}
+        ${renderSec("Níveis de escrita", "#F47B20", ESC, wCounts, sw)}
+        ${renderSec("Níveis de leitura", "#2F7D5B", LEI, rCounts, sr)}
       `;
 
       if (pg) {
         pg.innerHTML = !n ? '<span class="badge x" style="margin:0">Sem alunos</span>'
-          : av === n ? `<span class="badge" style="margin:0;font-weight:700">✓ ${av}/${n} alunos avaliados</span>`
-          : av ? `<span class="badge w" style="margin:0;font-weight:700">● ${av}/${n} avaliados</span>`
-          : '<span class="badge x" style="margin:0">Pendente: ninguém avaliado</span>';
+          : av === n ? `<span class="badge" style="margin:0">✓ ${av}/${n} alunos avaliados</span>`
+          : av ? `<span class="badge w" style="margin:0">● ${av}/${n} alunos avaliados</span>`
+          : '<span class="badge x" style="margin:0">Pendente: ninguém avaliado ainda</span>';
       }
 
       const pFill = document.getElementById("prog-bar-fill");
@@ -3136,11 +2864,11 @@
       }
       initW(c.id);
       const msgOk = $("#fo");
-      if (msgOk) msgOk.textContent = "✓ Salvo na planilha com sucesso!";
+      if (msgOk) msgOk.textContent = "✓ Salvo na planilha";
       setTimeout(() => {
         const o = $("#fo");
         if (o) o.textContent = "";
-      }, 4000);
+      }, 3500);
       upd();
     }
 
