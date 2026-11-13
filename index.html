@@ -1660,10 +1660,83 @@
 
     .dg {
       overflow: hidden;
+      margin-bottom: 22px;
     }
+    .dg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1.5px solid var(--ln);
+      padding-bottom: 10px;
+    }
+    .dg-metrics-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .dg-chip {
+      font-size: .78rem;
+      padding: 3px 10px;
+      background: var(--bg);
+      border: 1px solid var(--ln);
+      border-radius: 999px;
+      color: var(--mut);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .dg-chip b {
+      color: var(--ink);
+    }
+    .dg-chip-escrita {
+      background: #FFF7ED;
+      border-color: #FED7AA;
+      color: #9A3412;
+    }
+    .dg-chip-escrita b {
+      color: #C2410C;
+    }
+    .dg-chip-leitura {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+      color: #166534;
+    }
+    .dg-chip-leitura b {
+      color: #15803D;
+    }
+
+    .val-num {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: .83rem;
+    }
+    .val-zero {
+      color: #CBD5E1;
+      font-size: .76rem;
+      font-weight: 400;
+    }
+    .col-sep {
+      border-right: 2px solid #CBD5E1 !important;
+    }
+    .col-pct-w {
+      background: #FFF7ED !important;
+      font-weight: 800;
+      color: #C2410C !important;
+    }
+    .col-pct-r {
+      background: #F0FDF4 !important;
+      font-weight: 800;
+      color: #15803D !important;
+    }
+
     .dg table {
       width: 100%;
-      min-width: 940px;
+      min-width: 860px;
       font-size: .82rem;
       text-align: center;
       border-collapse: collapse;
@@ -1677,30 +1750,17 @@
     }
     .dg th {
       font-weight: 700;
-      font-size: .72rem;
+      font-size: .71rem;
       letter-spacing: .02em;
     }
     .dg td:first-child {
       text-align: left;
       font-weight: 600;
-      padding-left: 10px;
+      padding-left: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 150px;
-    }
-    .dg td:nth-child(2) {
-      font-weight: 700;
-      width: 50px;
-    }
-    .dg td:nth-child(3) {
-      font-size: .78rem;
-      width: 55px;
-      color: var(--mut);
-    }
-    .dg td:nth-child(4) {
-      font-weight: 800;
-      width: 50px;
+      max-width: 140px;
     }
     .dg th.we {
       background: #FFF3EB;
@@ -1724,6 +1784,35 @@
     }
     .dg tr:hover:not(.tot) td {
       background: rgba(47, 125, 91, .03);
+    }
+
+    /* Cards de Turmas */
+    .dg-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .dg-card-turma {
+      background: #FFFFFF;
+      border: 1.5px solid var(--ln);
+      border-radius: var(--rd);
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .dg-card-turma:hover {
+      border-color: var(--g);
+      box-shadow: 0 4px 12px rgba(47, 125, 91, .08);
+    }
+    .dg-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
     }
 
     .tw {
@@ -2105,7 +2194,7 @@
     const CK = "semed_fund1_cache_v2";
     const CR = "semed_fund1_cred_v2";
     const vazio = () => ({ levels: [], students: [], cur: "", years: [], schools: [], classes: [], periods: [], coords: [], admins: [], rec: {} });
-    const S0 = () => ({ user: null, tab: "resumo", fs: "", fl: "", fp: "", sid: null, cid: null, pid: null, err: "" });
+    const S0 = () => ({ user: null, tab: "resumo", fs: "", fl: "", fp: "", ft: "", sid: null, cid: null, pid: null, err: "", dv: "todos" });
     let D = vazio(), TOK = "", chain = Promise.resolve(), pend = 0, needSync = false;
     let autoTimer = null, autoBusy = false;
     let S = S0();
@@ -2449,42 +2538,238 @@
       <div class="card"><h3>Resultado por ano escolar</h3>${legend(ESC)}<div class="tw"><table>${th("Ano escolar")}<tbody>${D.levels.map(l => ({ l, c2: cl.filter(c => c.lid == l.id) })).filter(x => x.c2.length).map(x => lin(x.l.name, x.c2)).join("")}</tbody></table></div></div>
       <div class="card"><h3>Resultado por escola</h3><p style="margin:-6px 0 8px;color:var(--mut);font-size:.84rem">Situação: média entre % de escrita alfabética+ e % de leitores. Adequado ≥ 70% · Atenção ≥ 50% · Prioritário &lt; 50%.</p><div class="tw"><table>${th("Escola")}<tbody>${D.schools.map(s => ({ s, c2: cl.filter(c => c.sid == s.id) })).filter(x => x.c2.length).map(x => lin(x.s.name, x.c2)).join("") || '<tr><td colspan="8" class="empty">Nenhuma turma.</td></tr>'}</tbody></table></div></div>`;
     }
-    /* Tabela idêntica à planilha: Professor(a) · Turma · Ano · Alunos · níveis de escrita · níveis de leitura */
+    const fmtVal = v => v > 0 ? `<b class="val-num">${v}</b>` : `<span class="val-zero">0</span>`;
+
     function diagTable(sid, pid) {
       const sc = sch(sid); if (!sc) return "";
       const cl = D.classes.filter(c => c.sid == sid && c.yid == yr() && (!S.fl || c.lid == S.fl) && (!S.ft || c.shift == S.ft)).sort((a, b) => D.levels.findIndex(l => l.id == a.lid) - D.levels.findIndex(l => l.id == b.lid) || a.name.localeCompare(b.name, "pt-BR"));
       if (!cl.length) return "";
-      const tot = tally(cl, pid), row = (c, t, b) => `<tr ${b ? 'class="tot"' : ""}><td style="text-align:left">${b ? "TOTAL" : esc(c.prof || "—")}</td><td>${b ? "" : esc(c.name)}</td><td>${b ? "" : esc(lname(c.lid))}</td><td>${b ? "" : `<span class="badge" style="margin:0;font-size:.76rem">${esc(c.shift || "—")}</span>`}</td><td><b>${t.n}</b></td>${t.w.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sw ? t.pa + "%" : "-"}</b></td>${t.r.map(v => `<td>${v}</td>`).join("")}<td><b>${t.sr ? t.pl + "%" : "-"}</b></td></tr>`;
-      return `<div class="card dg">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;border-bottom:1.5px solid var(--ln);padding-bottom:10px">
-          <h3 style="margin:0;color:var(--navy);font-size:1.05rem;display:flex;align-items:center;gap:8px">
-            <span style="display:inline-block;width:4px;height:18px;background:var(--g);border-radius:2px"></span>
-            ${esc(sc.name)}
-          </h3>
-          <div style="display:flex;gap:14px;font-size:.82rem;color:var(--mut)">
-            <span><b>${cl.length}</b> turmas</span>
-            <span><b>${tot.n}</b> alunos</span>
-            <span style="color:var(--gd)"><b>${tot.sw ? tot.pa + "%" : "-"}</b> alfabético+</span>
-            <span style="color:var(--gd)"><b>${tot.sr ? tot.pl + "%" : "-"}</b> leitores</span>
+      const tot = tally(cl, pid);
+      const vMode = S.dv || "todos";
+
+      const headerHtml = `<div class="dg-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="display:inline-block;width:4px;height:24px;background:var(--g);border-radius:2px"></span>
+          <div>
+            <h3 style="margin:0;color:var(--navy);font-size:1.05rem;font-weight:700">${esc(sc.name)}</h3>
+            <span style="font-size:.76rem;color:var(--mut)">Diagnóstico de escrita e leitura</span>
           </div>
         </div>
+        <div class="dg-metrics-bar">
+          <span class="dg-chip"><b>${cl.length}</b> ${cl.length === 1 ? 'turma' : 'turmas'}</span>
+          <span class="dg-chip"><b>${tot.n}</b> alunos</span>
+          <span class="dg-chip dg-chip-escrita" title="Alunos em nível Alfabético ou Ortográfico"><b>${tot.sw ? tot.pa + "%" : "-"}</b> alfabético+</span>
+          <span class="dg-chip dg-chip-leitura" title="Alunos Leitores Iniciantes ou Fluentes"><b>${tot.sr ? tot.pl + "%" : "-"}</b> leitores</span>
+        </div>
+      </div>`;
+
+      // MODO 1: RESUMO VISUAL POR TURMA (CARDS)
+      if (vMode === "cards") {
+        return `<div class="card dg">
+          ${headerHtml}
+          <div class="dg-cards-grid">
+            ${cl.map(c => {
+              const t = tally([c], pid);
+              return `<div class="dg-card-turma">
+                <div>
+                  <div class="dg-card-header">
+                    <div>
+                      <div style="display:flex;align-items:center;gap:6px">
+                        <b style="font-size:1.05rem;color:var(--navy)">${esc(c.name)}</b>
+                        <span class="badge" style="margin:0;font-size:.75rem">${esc(lname(c.lid))}</span>
+                        ${c.shift ? `<span class="badge" style="margin:0;font-size:.72rem;background:#F8FAFC;color:#475569;border-color:#E2E8F0">${esc(c.shift)}</span>` : ""}
+                      </div>
+                      <small style="color:var(--mut);display:block;margin-top:3px">Prof(a): ${esc(c.prof || "—")}</small>
+                    </div>
+                    <div style="text-align:right">
+                      <span style="font-size:1.15rem;font-weight:800;color:var(--navy)">${t.n}</span>
+                      <small style="display:block;color:var(--mut);font-size:.72rem">alunos</small>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--ln)">
+                    <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px">
+                      <span style="font-weight:600;color:#9A3412">Escrita Alfabética+</span>
+                      <b style="color:#C2410C">${t.sw ? t.pa + "%" : "-"} (${t.w[4] + t.w[5]} de ${t.n})</b>
+                    </div>
+                    ${sbar(t.w, ESC)}
+                  </div>
+
+                  <div style="margin-top:10px">
+                    <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px">
+                      <span style="font-weight:600;color:#166534">Leitores (Inic. + Fluent.)</span>
+                      <b style="color:#15803D">${t.sr ? t.pl + "%" : "-"} (${t.r[4] + t.r[5]} de ${t.n})</b>
+                    </div>
+                    ${sbar(t.r, LEI)}
+                  </div>
+                </div>
+
+                <div style="margin-top:14px;padding-top:10px;border-top:1px dashed var(--ln);display:flex;justify-content:flex-end">
+                  <button class="ghost" style="height:30px;font-size:.76rem;padding:0 10px" onclick="abrir('${c.id}')">Lançar / Ver Alunos →</button>
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>`;
+      }
+
+      // MODO 2: FOCO EM ESCRITA
+      if (vMode === "escrita") {
+        const escHeaders = [
+          ["Pré-Sil.", "Pré-silábico"],
+          ["Sil. s/v", "Silábico sem valor"],
+          ["Sil. c/v", "Silábico com valor"],
+          ["Sil. Alf.", "Silábico alfabético"],
+          ["Alfab.", "Alfabético"],
+          ["Ortogr.", "Ortográfico"]
+        ];
+        return `<div class="card dg">
+          ${headerHtml}
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:130px;text-align:left">Professor(a)</th>
+                  <th style="width:48px">Turma</th>
+                  <th style="width:54px">Ano</th>
+                  <th style="width:68px">Turno</th>
+                  <th style="width:48px;border-right:2px solid #CBD5E1">Alunos</th>
+                  ${escHeaders.map(h => `<th class="we" style="width:45px" title="${h[1]}">${h[0]}</th>`).join("")}
+                  <th class="we" style="min-width:130px">Distribuição dos Níveis</th>
+                  <th class="we col-pct-w" style="width:65px">% Alfab.+</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cl.map(c => {
+                  const t = tally([c], pid);
+                  return `<tr>
+                    <td style="text-align:left;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px" title="${esc(c.prof || "")}">${esc(c.prof || "—")}</td>
+                    <td><span class="badge" style="margin:0;font-weight:700;background:var(--bg)">${esc(c.name)}</span></td>
+                    <td><span style="font-size:.76rem;color:var(--mut);white-space:nowrap">${esc(lname(c.lid))}</span></td>
+                    <td>${c.shift ? `<span class="badge" style="margin:0;font-size:.72rem;background:#F8FAFC;color:#475569;border-color:#E2E8F0">${esc(c.shift)}</span>` : `<span style="color:#CBD5E1">—</span>`}</td>
+                    <td style="font-weight:700;border-right:2px solid #CBD5E1"><b>${t.n}</b></td>
+                    ${t.w.map(v => `<td>${fmtVal(v)}</td>`).join("")}
+                    <td style="padding:4px 8px">${sbar(t.w, ESC)}</td>
+                    <td class="col-pct-w"><b>${t.sw ? t.pa + "%" : "-"}</b></td>
+                  </tr>`;
+                }).join("")}
+                <tr class="tot">
+                  <td style="text-align:left">TOTAL</td>
+                  <td>—</td><td>—</td><td>—</td>
+                  <td style="border-right:2px solid #CBD5E1"><b>${tot.n}</b></td>
+                  ${tot.w.map(v => `<td><b>${v}</b></td>`).join("")}
+                  <td style="padding:4px 8px">${sbar(tot.w, ESC)}</td>
+                  <td class="col-pct-w"><b>${tot.sw ? tot.pa + "%" : "-"}</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+      }
+
+      // MODO 3: FOCO EM LEITURA
+      if (vMode === "leitura") {
+        const leiHeaders = [
+          ["Nível 1", "Pré-leitor · Nível 1"],
+          ["Nível 2", "Pré-leitor · Nível 2"],
+          ["Nível 3", "Pré-leitor · Nível 3"],
+          ["Nível 4", "Pré-leitor · Nível 4"],
+          ["L. Inic.", "Leitor iniciante"],
+          ["L. Fluent.", "Leitor fluente"]
+        ];
+        return `<div class="card dg">
+          ${headerHtml}
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:130px;text-align:left">Professor(a)</th>
+                  <th style="width:48px">Turma</th>
+                  <th style="width:54px">Ano</th>
+                  <th style="width:68px">Turno</th>
+                  <th style="width:48px;border-right:2px solid #CBD5E1">Alunos</th>
+                  ${leiHeaders.map(h => `<th class="wl" style="width:45px" title="${h[1]}">${h[0]}</th>`).join("")}
+                  <th class="wl" style="min-width:130px">Distribuição dos Níveis</th>
+                  <th class="wl col-pct-r" style="width:65px">% Leitor</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cl.map(c => {
+                  const t = tally([c], pid);
+                  return `<tr>
+                    <td style="text-align:left;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px" title="${esc(c.prof || "")}">${esc(c.prof || "—")}</td>
+                    <td><span class="badge" style="margin:0;font-weight:700;background:var(--bg)">${esc(c.name)}</span></td>
+                    <td><span style="font-size:.76rem;color:var(--mut);white-space:nowrap">${esc(lname(c.lid))}</span></td>
+                    <td>${c.shift ? `<span class="badge" style="margin:0;font-size:.72rem;background:#F8FAFC;color:#475569;border-color:#E2E8F0">${esc(c.shift)}</span>` : `<span style="color:#CBD5E1">—</span>`}</td>
+                    <td style="font-weight:700;border-right:2px solid #CBD5E1"><b>${t.n}</b></td>
+                    ${t.r.map(v => `<td>${fmtVal(v)}</td>`).join("")}
+                    <td style="padding:4px 8px">${sbar(t.r, LEI)}</td>
+                    <td class="col-pct-r"><b>${t.sr ? t.pl + "%" : "-"}</b></td>
+                  </tr>`;
+                }).join("")}
+                <tr class="tot">
+                  <td style="text-align:left">TOTAL</td>
+                  <td>—</td><td>—</td><td>—</td>
+                  <td style="border-right:2px solid #CBD5E1"><b>${tot.n}</b></td>
+                  ${tot.r.map(v => `<td><b>${v}</b></td>`).join("")}
+                  <td style="padding:4px 8px">${sbar(tot.r, LEI)}</td>
+                  <td class="col-pct-r"><b>${tot.sr ? tot.pl + "%" : "-"}</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>`;
+      }
+
+      // MODO 4: TODOS (PLANILHA COMPLETA OTIMIZADA)
+      const escHeaders = [
+        ["Pré-Sil.", "Pré-silábico"],
+        ["Sil. s/v", "Silábico sem valor"],
+        ["Sil. c/v", "Silábico com valor"],
+        ["Sil. Alf.", "Silábico alfabético"],
+        ["Alfab.", "Alfabético"],
+        ["Ortogr.", "Ortográfico"]
+      ];
+      const leiHeaders = [
+        ["Nível 1", "Pré-leitor · Nível 1"],
+        ["Nível 2", "Pré-leitor · Nível 2"],
+        ["Nível 3", "Pré-leitor · Nível 3"],
+        ["Nível 4", "Pré-leitor · Nível 4"],
+        ["L. Inic.", "Leitor iniciante"],
+        ["L. Fluent.", "Leitor fluente"]
+      ];
+
+      const row = (c, t, b) => `<tr ${b ? 'class="tot"' : ""}>
+        <td style="text-align:left;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px" title="${b ? "" : esc(c?.prof || "")}">${b ? "TOTAL" : esc(c?.prof || "—")}</td>
+        <td>${b ? "—" : `<span class="badge" style="margin:0;font-weight:700;background:var(--bg)">${esc(c.name)}</span>`}</td>
+        <td>${b ? "—" : `<span style="font-size:.76rem;color:var(--mut);white-space:nowrap">${esc(lname(c.lid))}</span>`}</td>
+        <td>${b ? "—" : (c.shift ? `<span class="badge" style="margin:0;font-size:.72rem;background:#F8FAFC;color:#475569;border-color:#E2E8F0">${esc(c.shift)}</span>` : `<span style="color:#CBD5E1">—</span>`)}</td>
+        <td style="font-weight:700;border-right:2px solid #CBD5E1"><b>${t.n}</b></td>
+        ${t.w.map(v => `<td>${b ? `<b>${v}</b>` : fmtVal(v)}</td>`).join("")}
+        <td class="col-pct-w col-sep"><b>${t.sw ? t.pa + "%" : "-"}</b></td>
+        ${t.r.map(v => `<td>${b ? `<b>${v}</b>` : fmtVal(v)}</td>`).join("")}
+        <td class="col-pct-r"><b>${t.sr ? t.pl + "%" : "-"}</b></td>
+      </tr>`;
+
+      return `<div class="card dg">
+        ${headerHtml}
         <div class="tw">
           <table>
             <thead>
               <tr>
-                <th rowspan="2" style="width:140px">Professor(a)</th>
-                <th rowspan="2" style="width:50px">Turma</th>
-                <th rowspan="2" style="width:55px">Ano</th>
-                <th rowspan="2" style="width:75px">Turno</th>
-                <th rowspan="2" style="width:50px">Alunos</th>
-                <th class="we" colspan="7">ESCRITA</th>
+                <th rowspan="2" style="width:130px;text-align:left">Professor(a)</th>
+                <th rowspan="2" style="width:48px">Turma</th>
+                <th rowspan="2" style="width:54px">Ano</th>
+                <th rowspan="2" style="width:68px">Turno</th>
+                <th rowspan="2" style="width:48px;border-right:2px solid #CBD5E1">Alunos</th>
+                <th class="we" colspan="7" style="border-right:2px solid #CBD5E1">ESCRITA</th>
                 <th class="wl" colspan="7">LEITURA</th>
               </tr>
               <tr>
-                ${ESC.map(e => `<th class="we">${e[2]}</th>`).join("")}
-                <th class="we">% Alfab.+</th>
-                ${LEI.map(e => `<th class="wl">${e[2]}</th>`).join("")}
-                <th class="wl">% Leitor</th>
+                ${escHeaders.map(h => `<th class="we" style="width:42px" title="${h[1]}">${h[0]}</th>`).join("")}
+                <th class="we col-pct-w col-sep" style="width:56px" title="Percentual de alunos Alfabéticos ou Ortográficos">% Alfab.+</th>
+                ${leiHeaders.map(h => `<th class="wl" style="width:42px" title="${h[1]}">${h[0]}</th>`).join("")}
+                <th class="wl col-pct-r" style="width:56px" title="Percentual de alunos Leitores Iniciantes ou Fluentes">% Leitor</th>
               </tr>
             </thead>
             <tbody>
@@ -2495,9 +2780,40 @@
         </div>
       </div>`;
     }
+
+    const diagViewSwitcher = () => `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid var(--ln);padding-top:12px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:.76rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em">Modo de Exibição:</span>
+        <div class="pills" style="margin:0">
+          <button class="${(!S.dv || S.dv == 'todos') ? 'on' : ''}" onclick="go({dv:'todos'})">Planilha Completa</button>
+          <button class="${S.dv == 'escrita' ? 'on' : ''}" onclick="go({dv:'escrita'})">Foco em Escrita</button>
+          <button class="${S.dv == 'leitura' ? 'on' : ''}" onclick="go({dv:'leitura'})">Foco em Leitura</button>
+          <button class="${S.dv == 'cards' ? 'on' : ''}" onclick="go({dv:'cards'})">Resumo por Turma</button>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:var(--mut)">
+        Zeros (<span style="color:#94A3B8;font-weight:600">0</span>) atenuados para destacar alunos avaliados.
+      </div>
+    </div>`;
+
     function aDiag() {
       const ss = D.schools.filter(s => !S.fs || s.id == S.fs);
-      return `<div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h3 style="margin:0">Diagnóstico por turma (modelo da planilha)</h3>${acoes}</div><div class="grid">${perSel()}${escSel()}${lvSel()}</div></div>${printHead("Diagnóstico de escrita e leitura" + (S.fp ? " · " + (per(S.fp)?.name || "") : ""))}${ss.map(s => diagTable(s.id, S.fp)).join("") || '<p class="empty">Nenhuma escola.</p>'}`;
+      return `<div class="card noprint">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center">
+          <div>
+            <h3 style="margin:0 0 4px">Diagnóstico por turma</h3>
+            <p style="margin:0;font-size:.84rem;color:var(--mut)">Acompanhamento de escrita e leitura por turma e escola.</p>
+          </div>
+          ${acoes}
+        </div>
+        <div class="grid" style="margin-bottom:12px">
+          ${perSel()}
+          ${escSel()}
+          ${lvSel()}
+          ${shSel()}
+        </div>
+        ${diagViewSwitcher()}
+      </div>${printHead("Diagnóstico de escrita e leitura" + (S.fp ? " · " + (per(S.fp)?.name || "") : ""))}${ss.map(s => diagTable(s.id, S.fp)).join("") || '<p class="empty">Nenhuma escola cadastrada.</p>'}`;
     }
     const addBox = (t, f, b) => `<div class="card"><h3>${t}</h3>${f}<p style="margin:14px 0 0">${b}</p></div>`;
     const chkL = (ids, cls) => D.levels.map(l => `<label><input type="checkbox" class="${cls}" value="${l.id}" ${ids.includes(l.id) ? "checked" : ""}>${esc(l.name)}</label>`).join("");
@@ -2713,7 +3029,7 @@
       if (!S.sid) return `<div class="hello"><h2>Olá, ${esc(S.user.name)}</h2><p>Escolha a escola para acessar as turmas.</p></div><div class="list">${S.user.sids.map(i => { const sc = sch(i); return sc ? `<button class="item" onclick="go({sid:'${i}'})"><h4>${esc(sc.name)}</h4><small>${D.classes.filter(c => c.sid == i && c.yid == D.cur).length} turmas</small></button>` : "" }).join("")}</div>`;
       const s = sch(S.sid), back = S.user.sids.length > 1 ? `<button class="crumb" onclick="go({sid:null,cid:null,dg:false})">← Voltar às escolas</button>` : "", op = openP();
       if (!s) return `${back}<div class="hello"><h2>Escola não encontrada</h2></div>`;
-      if (S.dg) return `${back}<button class="crumb" onclick="go({dg:false})">← Voltar às turmas</button><div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><h3 style="margin:0">Diagnóstico · ${esc(s.name)}</h3>${acoes}</div><div class="grid" style="margin-top:12px">${perSel().replace("go({fp:this.value})", "go({fp:this.value,pid:this.value})")}${lvSel()}</div></div>${printHead("Diagnóstico de escrita e leitura")}${diagTable(S.sid, S.fp)}`;
+      if (S.dg) return `${back}<button class="crumb" onclick="go({dg:false})">← Voltar às turmas</button><div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><div><h3 style="margin:0 0 4px">Diagnóstico · ${esc(s.name)}</h3><p style="margin:0;font-size:.84rem;color:var(--mut)">Resultados de escrita e leitura da sua escola.</p></div>${acoes}</div><div class="grid" style="margin-top:12px;margin-bottom:12px">${perSel().replace("go({fp:this.value})", "go({fp:this.value,pid:this.value})")}${lvSel()}${shSel()}</div>${diagViewSwitcher()}</div>${printHead("Diagnóstico de escrita e leitura")}${diagTable(S.sid, S.fp)}`;
       if (!op.length) return `${back}<div class="hello"><h2>${esc(s.name)}</h2></div><div class="card empty">Nenhum período está aberto para preenchimento no momento.<br>Aguarde a liberação pela Secretaria de Educação.</div>`;
       if (!op.find(p => p.id == S.pid)) S.pid = op[0].id;
       if (!S.cid) {
