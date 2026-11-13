@@ -1661,6 +1661,7 @@
     .dg {
       overflow: hidden;
       margin-bottom: 22px;
+      border-radius: 0 !important;
     }
     .dg-header {
       display: flex;
@@ -2088,11 +2089,11 @@
         font-weight: 600 !important;
       }
 
-      /* Card da escola na impressao */
-      .dg {
+      /* Card da escola na impressao - bordas 100% retas */
+      .dg, .card.dg {
         box-shadow: none !important;
         border: 1px solid #CBD5E1 !important;
-        border-radius: 6px !important;
+        border-radius: 0 !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
         margin-bottom: 14px !important;
