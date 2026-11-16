@@ -2442,59 +2442,42 @@
       border-color: var(--ink);
     }
 
-    /* Barra de busca e filtros reutilizáveis */
-    .search-input-wrap {
+    /* Campo de busca no padrão do sistema */
+    .search-field {
       position: relative;
-      display: flex;
-      align-items: center;
+      margin: 12px 0 16px;
     }
-    .search-input-wrap svg {
+    .search-field svg {
       position: absolute;
-      left: 12px;
-      width: 16px;
-      height: 16px;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
       color: var(--mut);
       pointer-events: none;
     }
-    .search-input-wrap input {
-      height: 38px;
-      padding: 0 12px 0 36px !important;
-      border-radius: 10px;
-      border: 1.5px solid var(--ln);
-      background: var(--sf);
-      font-size: .86rem;
-      color: var(--ink);
-      width: 100%;
-      box-sizing: border-box;
-      transition: border-color .15s ease, box-shadow .15s ease;
+    .search-field input {
+      padding-left: 42px !important;
+      padding-right: 36px !important;
     }
-    .search-input-wrap input:focus {
-      border-color: var(--g);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
-    }
-    .toolbar-select {
-      height: 38px;
-      padding: 0 10px;
-      border-radius: 10px;
-      border: 1.5px solid var(--ln);
-      background: var(--sf);
-      font-size: .84rem;
-      color: var(--ink);
+    .search-field .clear-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
       cursor: pointer;
-      box-sizing: border-box;
-      transition: border-color .15s ease, box-shadow .15s ease;
+      color: var(--mut);
+      padding: 4px 6px;
+      font-size: 1.1rem;
+      line-height: 1;
+      display: none;
+      border-radius: 50%;
     }
-    .toolbar-select:focus {
-      border-color: var(--g);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
-    }
-    @media (max-width: 760px) {
-      .toolbar-select {
-        flex: 1 1 100%;
-        max-width: 100% !important;
-      }
+    .search-field .clear-btn:hover {
+      color: var(--ink);
     }
 
     /* Select nativo refinado */
@@ -2593,7 +2576,7 @@
     </header>
     <div class="wrap" id="view"></div>
   </section>
-  <script src="dados_reais.js?v=busca2"></script>
+  <script src="dados_reais.js?v=busca3"></script>
   <script>
     /* ===== CONFIGURAÇÃO: cole aqui a URL do App da Web (termina em /exec) ===== */
     const API_URL = "https://script.google.com/macros/s/AKfycbxXJGcXCvjIq1S9Ac801VFfwBNk-uFu_ck5Wgr3SEXmXtKRrAheWj6dj9sjEywLG_-k/exec";
@@ -3427,6 +3410,20 @@
       if (inp) inp.value = "";
       aplicarFiltrosEscolas();
     }
+    function filtrarEscolasTexto(txt) {
+      _filtroEscolaTexto = (txt || "").trim();
+      const btn = document.getElementById("btn_limpar_escolas");
+      if (btn) btn.style.display = _filtroEscolaTexto ? "block" : "none";
+      aplicarFiltrosEscolas();
+    }
+    function limparFiltroEscola() {
+      _filtroEscolaTexto = "";
+      const inp = document.getElementById("filtro_escola_busca");
+      if (inp) { inp.value = ""; inp.focus(); }
+      const btn = document.getElementById("btn_limpar_escolas");
+      if (btn) btn.style.display = "none";
+      aplicarFiltrosEscolas();
+    }
     function aplicarFiltrosEscolas() {
       const rows = document.querySelectorAll("#lista_escolas_rows .row-escola");
       let vis = 0;
@@ -3441,8 +3438,6 @@
       if (cnt) cnt.textContent = `${vis}`;
       const vazio = document.getElementById("escolas_empty_filter");
       if (vazio) vazio.style.display = (vis === 0 && rows.length > 0) ? "block" : "none";
-      const btnL = document.getElementById("btn_limpar_escolas");
-      if (btnL) btnL.style.display = _filtroEscolaTexto ? "inline-flex" : "none";
     }
 
     function aEscolas() {
@@ -3473,15 +3468,13 @@
             Exibindo <b id="cnt_escolas_num">${D.schools.length}</b> de ${D.schools.length} escolas
           </span>
         </div>
-        <div class="table-toolbar" style="margin:12px 0 16px">
-          <div class="search-input-wrap" style="flex:1 1 280px;position:relative">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input type="text" id="filtro_escola_busca" placeholder="Buscar escola por nome..." value="${esc(_filtroEscolaTexto)}" oninput="filtrarEscolasTexto(this.value)">
-          </div>
-          <button id="btn_limpar_escolas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${_filtroEscolaTexto ? 'inline-flex' : 'none'}" onclick="limparFiltroEscola()">Limpar busca</button>
+        <div class="search-field">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="filtro_escola_busca" placeholder="Buscar escola por nome..." value="${esc(_filtroEscolaTexto)}" oninput="filtrarEscolasTexto(this.value)">
+          <button id="btn_limpar_escolas" type="button" class="clear-btn" style="display:${_filtroEscolaTexto ? 'block' : 'none'}" onclick="limparFiltroEscola()" title="Limpar busca">✕</button>
         </div>
       `;
 
@@ -3521,12 +3514,16 @@
 
     function filtrarTurmasTexto(txt) {
       _filtroTurmaTexto = (txt || "").trim();
+      const btn = document.getElementById("btn_limpar_turmas");
+      if (btn) btn.style.display = _filtroTurmaTexto ? "block" : "none";
       aplicarFiltrosTurmas();
     }
     function limparFiltrosTurmas() {
       _filtroTurmaTexto = "";
       const inp = document.getElementById("filtro_turma_busca");
-      if (inp) inp.value = "";
+      if (inp) { inp.value = ""; inp.focus(); }
+      const btn = document.getElementById("btn_limpar_turmas");
+      if (btn) btn.style.display = "none";
       aplicarFiltrosTurmas();
     }
 
@@ -3547,8 +3544,6 @@
       if (cnt) cnt.textContent = `${vis}`;
       const vazio = document.getElementById("turmas_empty_filter");
       if (vazio) vazio.style.display = (vis === 0 && rows.length > 0) ? "" : "none";
-      const btnL = document.getElementById("btn_limpar_turmas");
-      if (btnL) btnL.style.display = _filtroTurmaTexto ? "inline-flex" : "none";
     }
 
     function aTurmas() {
@@ -3558,7 +3553,7 @@
       let visTurmas = 0;
 
       const headerTurmas = `
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
           <div>
             <h3 style="margin:0 0 2px">Turmas · ${esc(yname(yr()))}</h3>
             <p style="margin:0;font-size:.85rem;color:var(--mut)">Gerencie e localize as turmas cadastradas neste ano letivo.</p>
@@ -3567,15 +3562,13 @@
             Exibindo <b id="cnt_turmas_num">${allTurmas.length}</b> de ${allTurmas.length} turmas
           </span>
         </div>
-        <div class="table-toolbar" style="margin-bottom:14px">
-          <div class="search-input-wrap" style="flex:1 1 320px;max-width:500px;position:relative">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
-            </svg>
-            <input type="text" id="filtro_turma_busca" placeholder="Buscar por turma, professor ou escola..." value="${esc(_filtroTurmaTexto)}" oninput="filtrarTurmasTexto(this.value)">
-          </div>
-          <button id="btn_limpar_turmas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${_filtroTurmaTexto ? 'inline-flex' : 'none'}" onclick="limparFiltrosTurmas()">Limpar busca</button>
+        <div class="search-field">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="filtro_turma_busca" placeholder="Buscar por turma, professor ou escola..." value="${esc(_filtroTurmaTexto)}" oninput="filtrarTurmasTexto(this.value)">
+          <button id="btn_limpar_turmas" type="button" class="clear-btn" style="display:${_filtroTurmaTexto ? 'block' : 'none'}" onclick="limparFiltrosTurmas()" title="Limpar busca">✕</button>
         </div>
       `;
 
@@ -3860,7 +3853,7 @@
         let visEsc = 0;
         return `<div class="hello"><h2>Olá, ${esc(S.user.name)}</h2><p>Escolha a escola para acessar as turmas.</p></div>
         ${S.user.sids.length > 2 ? `
-        <div class="search-input-wrap" style="margin-bottom:16px;max-width:380px;position:relative">
+        <div class="search-field" style="margin-bottom:16px;max-width:400px">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <circle cx="11" cy="11" r="7"></circle>
             <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
@@ -3900,7 +3893,7 @@
         </div>
         <div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div>
         ${cl.length > 3 ? `
-        <div class="search-input-wrap" style="margin:12px 0 16px;max-width:380px;position:relative">
+        <div class="search-field" style="max-width:400px">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <circle cx="11" cy="11" r="7"></circle>
             <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
