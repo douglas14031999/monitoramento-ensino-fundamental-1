@@ -2442,6 +2442,61 @@
       border-color: var(--ink);
     }
 
+    /* Barra de busca e filtros reutilizáveis */
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      width: 16px;
+      height: 16px;
+      color: var(--mut);
+      pointer-events: none;
+    }
+    .search-input-wrap input {
+      height: 38px;
+      padding: 0 12px 0 36px !important;
+      border-radius: 10px;
+      border: 1.5px solid var(--ln);
+      background: var(--sf);
+      font-size: .86rem;
+      color: var(--ink);
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .search-input-wrap input:focus {
+      border-color: var(--g);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
+    }
+    .toolbar-select {
+      height: 38px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--ln);
+      background: var(--sf);
+      font-size: .84rem;
+      color: var(--ink);
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .toolbar-select:focus {
+      border-color: var(--g);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(15, 81, 50, 0.12);
+    }
+    @media (max-width: 760px) {
+      .toolbar-select {
+        flex: 1 1 100%;
+        max-width: 100% !important;
+      }
+    }
+
     /* Select nativo refinado */
     .eval-select {
       height: 38px;
@@ -2538,7 +2593,7 @@
     </header>
     <div class="wrap" id="view"></div>
   </section>
-  <script src="dados_reais.js?v=380ca0b"></script>
+  <script src="dados_reais.js?v=busca1"></script>
   <script>
     /* ===== CONFIGURAÇÃO: cole aqui a URL do App da Web (termina em /exec) ===== */
     const API_URL = "https://script.google.com/macros/s/AKfycbxXJGcXCvjIq1S9Ac801VFfwBNk-uFu_ck5Wgr3SEXmXtKRrAheWj6dj9sjEywLG_-k/exec";
@@ -2609,6 +2664,14 @@
       });
     }
 
+    function normalizarEscolas(schools) {
+      if (!schools || !Array.isArray(schools)) return;
+      const allLids = D.levels.length ? D.levels.map(l => l.id) : ["l1", "l2", "l3", "l4", "l5"];
+      schools.forEach(s => {
+        if (!s.lids || !Array.isArray(s.lids) || !s.lids.length) s.lids = [...allLids];
+      });
+    }
+
     try {
       TOK = localStorage.getItem(TK) || "";
       const cached = localStorage.getItem(CK);
@@ -2624,6 +2687,7 @@
           if (D.periods) {
             D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
           }
+          normalizarEscolas(D.schools);
           normalizarTurmas(D.classes);
           normalizarAlunos(D.students, D.classes);
           if (r.role == "admin") {
@@ -2642,6 +2706,7 @@
         if (D.periods) {
           D.periods.forEach(p => { if (!p.yid) p.yid = D.cur || "y1"; });
         }
+        normalizarEscolas(D.schools);
         normalizarTurmas(D.classes);
         normalizarAlunos(D.students, D.classes);
       }
@@ -2923,6 +2988,7 @@
     const mask = v => v.replace(/\D/g, "").slice(0, 11).replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
     const lname = id => id === "multi" ? "Multiano" : (D.levels.find(l => l.id == id)?.name || "—"), sch = id => D.schools.find(s => s.id == id), per = id => D.periods.find(p => p.id == id), uid = (() => { let n = 0; return () => "x" + Date.now().toString(36) + (++n).toString(36) + Math.random().toString(36).slice(2, 5) })(), pct = (a, b) => b ? Math.round(a / b * 100) : 0;
     const go = o => { Object.assign(S, o); render() };
+    const normStr = s => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     const yname = id => D.years.find(y => y.id == id)?.name || "—", yr = () => D.years.some(y => y.id == S.yr) ? S.yr : D.cur, yCl = y => D.classes.filter(c => c.yid == y), yPer = y => D.periods.filter(p => p.yid == y);
     const openP = () => D.periods.filter(p => p.open && p.yid == D.cur);
     $("#cpf").oninput = e => { e.target.value = mask(e.target.value); };
@@ -3349,6 +3415,36 @@
       render();
       alert(criadas > 0 ? (criadas + " escolas cadastradas e salvas na planilha com sucesso!") : "Todas as 20 escolas já estão cadastradas.");
     }
+    let _filtroEscolaTexto = "";
+
+    function filtrarEscolasTexto(txt) {
+      _filtroEscolaTexto = (txt || "").trim();
+      aplicarFiltrosEscolas();
+    }
+    function limparFiltroEscola() {
+      _filtroEscolaTexto = "";
+      const inp = document.getElementById("filtro_escola_busca");
+      if (inp) inp.value = "";
+      aplicarFiltrosEscolas();
+    }
+    function aplicarFiltrosEscolas() {
+      const rows = document.querySelectorAll("#lista_escolas_rows .row-escola");
+      let vis = 0;
+      const q = normStr(_filtroEscolaTexto);
+      rows.forEach(r => {
+        const name = r.dataset.name || "";
+        const show = !q || name.includes(q);
+        r.style.display = show ? "flex" : "none";
+        if (show) vis++;
+      });
+      const cnt = document.getElementById("cnt_escolas_num");
+      if (cnt) cnt.textContent = `${vis}`;
+      const vazio = document.getElementById("escolas_empty_filter");
+      if (vazio) vazio.style.display = (vis === 0 && rows.length > 0) ? "block" : "none";
+      const btnL = document.getElementById("btn_limpar_escolas");
+      if (btnL) btnL.style.display = _filtroEscolaTexto ? "inline-flex" : "none";
+    }
+
     function aEscolas() {
       const faltam = ESCOLAS_CANOA.filter(nome => !D.schools.some(s => s.name.trim().toUpperCase() === nome.toUpperCase()));
       const bannerRede = faltam.length > 0 ? `<div class="card" style="border:1.5px solid var(--g);background:var(--gs);margin-bottom:16px">
@@ -3363,20 +3459,225 @@
           </div>
         </div>
       </div>` : "";
-      return bannerRede + addBox("Cadastrar escola individual", `<label>Nome da escola</label><input id="ne"><label style="margin-top:14px">Anos escolares que a escola oferece</label><div class="chk">${chkL([], "ns")}</div><div id="se"></div>`, `<button class="btn" onclick="addEscola()">Adicionar escola</button>`) + `<div class="card"><h3>Escolas cadastradas</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">Marque os <b>anos escolares</b> que cada escola oferece. Só eles poderão ser usadas ao criar turmas.</p>${D.schools.map(s => `<div class="row" style="align-items:flex-start"><div style="flex:1 1 260px"><input value="${esc(s.name)}" aria-label="Nome da escola" style="font-weight:700;height:40px" onchange="ren('schools','${s.id}',this.value);render()"><br><small>${(n => n + (n == 1 ? " turma" : " turmas") + " em " + esc(yname(D.cur)))(D.classes.filter(c => c.sid == s.id && c.yid == D.cur).length)}</small><div class="chk" style="margin-top:8px">${D.levels.map(l => `<label><input type="checkbox" ${s.lids.includes(l.id) ? "checked" : ""} onchange="togSL('${s.id}','${l.id}',this)">${esc(l.name)}</label>`).join("")}</div></div><button class="dan" onclick="del('school','${s.id}')">Excluir</button></div>`).join("") || '<p class="empty">Nenhuma escola.</p>'}</div>` }
+
+      const qEsc = normStr(_filtroEscolaTexto);
+      let visEscolas = 0;
+
+      const headerEscolas = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+          <div>
+            <h3 style="margin:0 0 2px">Escolas cadastradas</h3>
+            <p style="color:var(--mut);margin:0;font-size:.86rem">Marque os <b>anos escolares</b> que cada escola oferece. Só eles poderão ser usados ao criar turmas.</p>
+          </div>
+          <span class="chip" style="font-size:.8rem;padding:4px 12px;font-weight:700">
+            Exibindo <b id="cnt_escolas_num">${D.schools.length}</b> de ${D.schools.length} escolas
+          </span>
+        </div>
+        <div class="table-toolbar" style="margin:12px 0 16px">
+          <div class="search-input-wrap" style="flex:1 1 280px;position:relative">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="filtro_escola_busca" placeholder="Buscar escola por nome..." value="${esc(_filtroEscolaTexto)}" oninput="filtrarEscolasTexto(this.value)">
+          </div>
+          <button id="btn_limpar_escolas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${_filtroEscolaTexto ? 'inline-flex' : 'none'}" onclick="limparFiltroEscola()">Limpar busca</button>
+        </div>
+      `;
+
+      return bannerRede + addBox("Cadastrar escola individual", `<label>Nome da escola</label><input id="ne"><label style="margin-top:14px">Anos escolares que a escola oferece</label><div class="chk">${chkL([], "ns")}</div><div id="se"></div>`, `<button class="btn" onclick="addEscola()">Adicionar escola</button>`)
+        + `<div class="card">
+            ${headerEscolas}
+            <div id="lista_escolas_rows">
+              ${D.schools.map(s => {
+                const normName = normStr(s.name);
+                const isVis = !qEsc || normName.includes(qEsc);
+                if (isVis) visEscolas++;
+                const countTurmas = D.classes.filter(c => c.sid == s.id && c.yid == D.cur).length;
+                return `<div class="row row-escola" data-name="${normName}" style="align-items:flex-start;${isVis ? '' : 'display:none'}">
+                  <div style="flex:1 1 260px">
+                    <input value="${esc(s.name)}" aria-label="Nome da escola" style="font-weight:700;height:40px" onchange="ren('schools','${s.id}',this.value);render()">
+                    <br>
+                    <small>${countTurmas} ${countTurmas == 1 ? "turma" : "turmas"} em ${esc(yname(D.cur))}</small>
+                    <div class="chk" style="margin-top:8px">${D.levels.map(l => `<label><input type="checkbox" ${s.lids.includes(l.id) ? "checked" : ""} onchange="togSL('${s.id}','${l.id}',this)">${esc(l.name)}</label>`).join("")}</div>
+                  </div>
+                  <button class="dan" onclick="del('school','${s.id}')">Excluir</button>
+                </div>`;
+              }).join("") || '<p class="empty">Nenhuma escola.</p>'}
+              <div id="escolas_empty_filter" style="display:${visEscolas === 0 && D.schools.length > 0 ? 'block' : 'none'};text-align:center;padding:36px 16px;color:var(--mut)">
+                <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--navy)">Nenhuma escola encontrada</div>
+                <div style="font-size:.84rem;color:var(--mut);margin-bottom:12px">Não encontramos nenhuma escola cadastrada com o termo pesquisado.</div>
+                <button class="ghost" style="height:32px;padding:0 14px;font-size:.8rem" onclick="limparFiltroEscola()">Limpar busca</button>
+              </div>
+            </div>
+          </div>`;
+    }
     function aEtapas() { return addBox("Cadastrar ano escolar", `<label>Nome do ano escolar</label><input id="le" placeholder="Ex.: 6º Ano">`, `<button class="btn" onclick="addEtapa()">Adicionar ano escolar</button>`) + `<div class="card"><h3>Anos escolares (${D.levels.length})</h3><p style="color:var(--mut);margin:-6px 0 8px;font-size:.9rem">Depois de criar uma etapa, vincule-a às escolas na aba <b>Escolas</b>.</p>${D.levels.map((l, i) => `<div class="row"><span class="num">${i + 1}</span><input value="${esc(l.name)}" onchange="ren('levels','${l.id}',this.value)"><small>${D.schools.filter(s => s.lids.includes(l.id)).length} escolas · ${D.classes.filter(c => c.lid == l.id).length} turmas</small><button class="ghost" style="height:34px;padding:0 10px" onclick="mvL(${i},-1)">↑</button><button class="ghost" style="height:34px;padding:0 10px" onclick="mvL(${i},1)">↓</button><button class="dan" onclick="del('level','${l.id}')">Excluir</button></div>`).join("") || '<p class="empty">Nenhuma etapa.</p>'}</div>` }
     const editBtn = id => `<button class="ghost" style="height:34px;padding:0 12px" onclick="edit('${id}')">Editar</button> `;
     const edit = id => { go({ ed: id }); window.scrollTo({ top: 0, behavior: "smooth" }) };
     const cancelBtn = `<button class="ghost" style="margin-left:8px" onclick="go({ed:null})">Cancelar</button>`;
+
+    let _filtroTurmaTexto = "";
+    let _filtroTurmaEscola = "";
+    let _filtroTurmaAno = "";
+    let _filtroTurmaTurno = "";
+
+    function filtrarTurmasTexto(txt) {
+      _filtroTurmaTexto = (txt || "").trim();
+      aplicarFiltrosTurmas();
+    }
+    function filtrarTurmasEscola(sid) {
+      _filtroTurmaEscola = sid || "";
+      aplicarFiltrosTurmas();
+    }
+    function filtrarTurmasAno(lid) {
+      _filtroTurmaAno = lid || "";
+      aplicarFiltrosTurmas();
+    }
+    function filtrarTurmasTurno(t) {
+      _filtroTurmaTurno = t || "";
+      aplicarFiltrosTurmas();
+    }
+    function limparFiltrosTurmas() {
+      _filtroTurmaTexto = "";
+      _filtroTurmaEscola = "";
+      _filtroTurmaAno = "";
+      _filtroTurmaTurno = "";
+      const inp = document.getElementById("filtro_turma_busca");
+      if (inp) inp.value = "";
+      const se = document.getElementById("filtro_turma_escola");
+      if (se) se.value = "";
+      const sa = document.getElementById("filtro_turma_ano");
+      if (sa) sa.value = "";
+      const st = document.getElementById("filtro_turma_turno");
+      if (st) st.value = "";
+      aplicarFiltrosTurmas();
+    }
+
+    function aplicarFiltrosTurmas() {
+      const rows = document.querySelectorAll("#tab_turmas_rows tr.turma-row");
+      let vis = 0;
+      const q = normStr(_filtroTurmaTexto);
+      rows.forEach(r => {
+        const name = r.dataset.name || "";
+        const prof = r.dataset.prof || "";
+        const escola = r.dataset.escola || "";
+        const sid = r.dataset.sid || "";
+        const lid = r.dataset.lid || "";
+        const shift = r.dataset.shift || "";
+
+        const matchTxt = !q || name.includes(q) || prof.includes(q) || escola.includes(q);
+        const matchEscola = !_filtroTurmaEscola || sid === _filtroTurmaEscola;
+        const matchAno = !_filtroTurmaAno || lid === _filtroTurmaAno;
+        const matchTurno = !_filtroTurmaTurno || shift === _filtroTurmaTurno;
+
+        const show = matchTxt && matchEscola && matchAno && matchTurno;
+        r.style.display = show ? "" : "none";
+        if (show) vis++;
+      });
+      const cnt = document.getElementById("cnt_turmas_num");
+      if (cnt) cnt.textContent = `${vis}`;
+      const vazio = document.getElementById("turmas_empty_filter");
+      if (vazio) vazio.style.display = (vis === 0 && rows.length > 0) ? "" : "none";
+      const btnL = document.getElementById("btn_limpar_turmas");
+      if (btnL) btnL.style.display = (_filtroTurmaTexto || _filtroTurmaEscola || _filtroTurmaAno || _filtroTurmaTurno) ? "inline-flex" : "none";
+    }
+
     function aTurmas() {
       const e = S.ed && cls(S.ed), sid = e ? e.sid : D.schools[0]?.id;
+      const allTurmas = yCl(yr());
+      const hasFilter = !!(_filtroTurmaTexto || _filtroTurmaEscola || _filtroTurmaAno || _filtroTurmaTurno);
+      const qTurma = normStr(_filtroTurmaTexto);
+      let visTurmas = 0;
+
+      const headerTurmas = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+          <div>
+            <h3 style="margin:0 0 2px">Turmas · ${esc(yname(yr()))}</h3>
+            <p style="margin:0;font-size:.85rem;color:var(--mut)">Gerencie e localize as turmas cadastradas neste ano letivo.</p>
+          </div>
+          <span class="chip" style="font-size:.8rem;padding:4px 12px;font-weight:700">
+            Exibindo <b id="cnt_turmas_num">${allTurmas.length}</b> de ${allTurmas.length} turmas
+          </span>
+        </div>
+        <div class="table-toolbar" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1 1 280px">
+            <div class="search-input-wrap" style="flex:1 1 240px;position:relative">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input type="text" id="filtro_turma_busca" placeholder="Buscar por turma, professor ou escola..." value="${esc(_filtroTurmaTexto)}" oninput="filtrarTurmasTexto(this.value)">
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <select id="filtro_turma_escola" onchange="filtrarTurmasEscola(this.value)" class="toolbar-select" style="max-width:210px">
+              <option value="">Todas as escolas (${D.schools.length})</option>
+              ${D.schools.map(s => `<option value="${s.id}" ${_filtroTurmaEscola === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}
+            </select>
+            <select id="filtro_turma_ano" onchange="filtrarTurmasAno(this.value)" class="toolbar-select">
+              <option value="">Todos os anos</option>
+              <option value="multi" ${_filtroTurmaAno === "multi" ? "selected" : ""}>Multiano</option>
+              ${D.levels.map(l => `<option value="${l.id}" ${_filtroTurmaAno === l.id ? "selected" : ""}>${esc(l.name)}</option>`).join("")}
+            </select>
+            <select id="filtro_turma_turno" onchange="filtrarTurmasTurno(this.value)" class="toolbar-select">
+              <option value="">Todos os turnos</option>
+              ${TURNOS.map(t => `<option value="${t}" ${_filtroTurmaTurno === t ? "selected" : ""}>${t}</option>`).join("")}
+            </select>
+            <button id="btn_limpar_turmas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${hasFilter ? 'inline-flex' : 'none'}" onclick="limparFiltrosTurmas()">Limpar filtros</button>
+          </div>
+        </div>
+      `;
+
       return addBox(e ? "Editar turma" : "Criar turma", `<div class="grid">
         <div><label>Escola</label><select id="ts" onchange="chgTs()">${D.schools.map(s => `<option value="${s.id}" ${s.id == sid ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></div>
         <div><label>Nome da turma</label><input id="tn" placeholder="Ex.: 3º A" value="${e ? esc(e.name) : ""}"></div>
         <div><label>Ano escolar</label><select id="tl">${lvOpts(sid, e?.lid)}</select></div>
         <div><label>Turno</label><select id="tsh"><option value="">Selecione o turno</option>${TURNOS.map(t => `<option value="${t}" ${e && (e.shift == t || normalizeShift(e.shift) == t) ? "selected" : ""}>${t}</option>`).join("")}</select></div>
         <div><label>Professor(a)</label><input id="tp" placeholder="Nome do professor(a)" value="${e ? esc(e.prof || "") : ""}"></div>
-      </div>`, e ? `<button class="btn" onclick="saveTurma()">Salvar alterações</button>${cancelBtn}` : `<button class="btn" onclick="addTurma()">Criar turma</button>`) + `<div class="card"><h3>Turmas · ${esc(yname(yr()))}</h3><div class="tw"><table><tr><th>Escola</th><th>Turma</th><th>Ano</th><th>Turno</th><th>Professor(a)</th><th>Alunos</th><th></th></tr>${yCl(yr()).map(c => `<tr ${S.ed == c.id ? 'style="background:var(--gs)"' : ""}><td>${esc(sch(c.sid)?.name || "")}</td><td><b>${esc(c.name)}</b></td><td>${esc(lname(c.lid))}</td><td><span class="badge" style="margin:0;font-size:.78rem">${esc(c.shift || "—")}</span></td><td>${esc(c.prof || "—")}</td><td>${stu(c.id).length}</td><td style="text-align:right;white-space:nowrap"><button class="ghost" style="height:34px;padding:0 12px" onclick="abrir('${c.id}')">Lançar níveis</button> ${editBtn(c.id)}<button class="dan" onclick="del('class','${c.id}')">Excluir</button></td></tr>`).join("")}</table>${yCl(yr()).length ? "" : '<p class="empty">Nenhuma turma neste ano letivo. Crie uma turma ou copie de outro ano na aba <b>Ano letivo</b>.</p>'}</div></div>`
+      </div>`, e ? `<button class="btn" onclick="saveTurma()">Salvar alterações</button>${cancelBtn}` : `<button class="btn" onclick="addTurma()">Criar turma</button>`)
+      + `<div class="card">
+          ${headerTurmas}
+          <div class="tw">
+            <table>
+              <thead>
+                <tr><th>Escola</th><th>Turma</th><th>Ano</th><th>Turno</th><th>Professor(a)</th><th>Alunos</th><th></th></tr>
+              </thead>
+              <tbody id="tab_turmas_rows">
+                ${allTurmas.map(c => {
+                  const sName = sch(c.sid)?.name || "";
+                  const lName = lname(c.lid);
+                  const normN = normStr(c.name);
+                  const normP = normStr(c.prof || "");
+                  const normE = normStr(sName);
+                  const matchTxt = !qTurma || normN.includes(qTurma) || normP.includes(qTurma) || normE.includes(qTurma);
+                  const matchEscola = !_filtroTurmaEscola || c.sid === _filtroTurmaEscola;
+                  const matchAno = !_filtroTurmaAno || c.lid === _filtroTurmaAno;
+                  const matchTurno = !_filtroTurmaTurno || c.shift === _filtroTurmaTurno;
+                  const isVisible = matchTxt && matchEscola && matchAno && matchTurno;
+                  if (isVisible) visTurmas++;
+                  return `<tr class="turma-row" ${S.ed == c.id ? 'style="background:var(--gs)"' : (!isVisible ? 'style="display:none"' : '')} data-name="${normN}" data-prof="${normP}" data-escola="${normE}" data-sid="${c.sid || ''}" data-lid="${c.lid || ''}" data-shift="${c.shift || ''}">
+                    <td>${esc(sName)}</td>
+                    <td><b>${esc(c.name)}</b></td>
+                    <td>${esc(lName)}</td>
+                    <td><span class="badge" style="margin:0;font-size:.78rem">${esc(c.shift || "—")}</span></td>
+                    <td>${esc(c.prof || "—")}</td>
+                    <td>${stu(c.id).length}</td>
+                    <td style="text-align:right;white-space:nowrap"><button class="ghost" style="height:34px;padding:0 12px" onclick="abrir('${c.id}')">Lançar níveis</button> ${editBtn(c.id)}<button class="dan" onclick="del('class','${c.id}')">Excluir</button></td>
+                  </tr>`;
+                }).join("")}
+                <tr id="turmas_empty_filter" style="display:${visTurmas === 0 && allTurmas.length > 0 ? '' : 'none'}">
+                  <td colspan="7" style="text-align:center;padding:36px 16px;color:var(--mut)">
+                    <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--navy)">Nenhuma turma encontrada</div>
+                    <div style="font-size:.84rem;color:var(--mut);margin-bottom:12px">Nenhuma turma corresponde aos filtros ou busca informados.</div>
+                    <button class="ghost" style="height:32px;padding:0 14px;font-size:.8rem" onclick="limparFiltrosTurmas()">Limpar filtros</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            ${allTurmas.length ? "" : '<p class="empty">Nenhuma turma neste ano letivo. Crie uma turma ou copie de outro ano na aba <b>Ano letivo</b>.</p>'}
+          </div>
+        </div>`;
     }
     
     function atualizarContadorEscolas(el) {
@@ -3573,8 +3874,68 @@
     };
     function abrir(cid) { const ps = S.user.role == "admin" ? yPer(D.cur) : openP(); if (!ps.some(p => p.id == S.pid)) S.pid = (openP()[0] || ps[0] || {}).id; S.cid = cid; initW(cid); go(S.user.role == "admin" ? { tab: "lancar" } : {}) }
     function setP(pid) { S.pid = pid; initW(S.cid); render() }
+    let _filtroCoordEscola = "";
+    function filtrarCoordEscolas(txt) {
+      _filtroCoordEscola = (txt || "").trim();
+      const q = normStr(_filtroCoordEscola);
+      const items = document.querySelectorAll("#coord_escolas_list .item");
+      let vis = 0;
+      items.forEach(it => {
+        const name = it.dataset.name || "";
+        const show = !q || name.includes(q);
+        it.style.display = show ? "block" : "none";
+        if (show) vis++;
+      });
+      const empty = document.getElementById("coord_escolas_empty");
+      if (empty) empty.style.display = (vis === 0 && items.length > 0) ? "block" : "none";
+    }
+
+    let _filtroCoordTurma = "";
+    function filtrarCoordTurmas(txt) {
+      _filtroCoordTurma = (txt || "").trim();
+      const q = normStr(_filtroCoordTurma);
+      const items = document.querySelectorAll("#coord_turmas_list .item");
+      let vis = 0;
+      items.forEach(it => {
+        const name = it.dataset.name || "";
+        const prof = it.dataset.prof || "";
+        const ano = it.dataset.ano || "";
+        const show = !q || name.includes(q) || prof.includes(q) || ano.includes(q);
+        it.style.display = show ? "block" : "none";
+        if (show) vis++;
+      });
+      const empty = document.getElementById("coord_turmas_empty");
+      if (empty) empty.style.display = (vis === 0 && items.length > 0) ? "block" : "none";
+    }
+
     function coord() {
-      if (!S.sid) return `<div class="hello"><h2>Olá, ${esc(S.user.name)}</h2><p>Escolha a escola para acessar as turmas.</p></div><div class="list">${S.user.sids.map(i => { const sc = sch(i); return sc ? `<button class="item" onclick="go({sid:'${i}'})"><h4>${esc(sc.name)}</h4><small>${D.classes.filter(c => c.sid == i && c.yid == D.cur).length} turmas</small></button>` : "" }).join("")}</div>`;
+      if (!S.sid) {
+        const qEsc = normStr(_filtroCoordEscola);
+        let visEsc = 0;
+        return `<div class="hello"><h2>Olá, ${esc(S.user.name)}</h2><p>Escolha a escola para acessar as turmas.</p></div>
+        ${S.user.sids.length > 2 ? `
+        <div class="search-input-wrap" style="margin-bottom:16px;max-width:380px;position:relative">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Buscar escola por nome..." value="${esc(_filtroCoordEscola)}" oninput="filtrarCoordEscolas(this.value)">
+        </div>` : ''}
+        <div class="list" id="coord_escolas_list">
+          ${S.user.sids.map(i => {
+            const sc = sch(i);
+            if (!sc) return "";
+            const normN = normStr(sc.name);
+            const isVis = !qEsc || normN.includes(qEsc);
+            if (isVis) visEsc++;
+            return `<button class="item" data-name="${normN}" style="${isVis ? '' : 'display:none'}" onclick="go({sid:'${i}'})">
+              <h4>${esc(sc.name)}</h4>
+              <small>${D.classes.filter(c => c.sid == i && c.yid == D.cur).length} turmas</small>
+            </button>`;
+          }).join("")}
+          <p id="coord_escolas_empty" class="empty" style="display:${visEsc === 0 && S.user.sids.length > 0 ? 'block' : 'none'};width:100%">Nenhuma escola encontrada.</p>
+        </div>`;
+      }
       const s = sch(S.sid), back = S.user.sids.length > 1 ? `<button class="crumb" onclick="go({sid:null,cid:null,dg:false})">← Voltar às escolas</button>` : "", op = openP();
       if (!s) return `${back}<div class="hello"><h2>Escola não encontrada</h2></div>`;
       if (S.dg) return `${back}<button class="crumb" onclick="go({dg:false})">← Voltar às turmas</button><div class="card noprint"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center"><div><h3 style="margin:0 0 4px">Diagnóstico · ${esc(s.name)}</h3><p style="margin:0;font-size:.84rem;color:var(--mut)">Resultados de escrita e leitura da sua escola.</p></div>${acoes}</div><div class="grid" style="margin-top:12px;margin-bottom:12px">${perSel().replace("go({fp:this.value})", "go({fp:this.value,pid:this.value})")}${lvSel()}${shSel()}</div>${diagViewSwitcher()}</div>${printHead("Diagnóstico de escrita e leitura")}${diagTable(S.sid, S.fp)}`;
@@ -3582,9 +3943,46 @@
       if (!op.find(p => p.id == S.pid)) S.pid = op[0].id;
       if (!S.cid) {
         const cl = D.classes.filter(c => c.sid == S.sid && c.yid == D.cur);
-        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><div class="hello" style="margin:0"><h2>${esc(s.name)}</h2><p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p></div><button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">Ver diagnóstico da escola</button></div><div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div><div class="list">${cl.map(c => { const st = classStatus(c.id, S.pid); return `<button class="item" onclick="abrir('${c.id}')"><h4 style="margin:0 0 4px;font-size:1.15rem;font-weight:800;color:var(--navy)">${esc(c.name)}</h4><small style="display:block;color:var(--mut);margin-bottom:12px">${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small><div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">${st.status == "completa" ? `<span class="badge" style="margin:0">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w" style="margin:0">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x" style="margin:0">${st.total ? "Pendente" : "Sem alunos"}</span>`}<span class="badge" style="margin:0;background:var(--bg);color:var(--ink);border:1px solid var(--ln);font-weight:600">${esc(lname(c.lid))}</span>${c.shift ? `<span class="badge" style="margin:0;background:#F8FAFC;color:#475569;border:1px solid #E2E8F0;font-weight:600">${esc(c.shift)}</span>` : ""}</div></button>` }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}</div>`
+        const qTurma = normStr(_filtroCoordTurma);
+        let visTurmas = 0;
+        return `${back}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px">
+          <div class="hello" style="margin:0">
+            <h2>${esc(s.name)}</h2>
+            <p style="margin:4px 0 0">Escolha o período e a turma para lançar a escrita e a leitura de cada aluno.</p>
+          </div>
+          <button class="ghost" style="height:36px;font-size:.82rem" onclick="go({dg:true,fp:S.pid})">Ver diagnóstico da escola</button>
+        </div>
+        <div class="pills">${op.map(p => `<button class="${p.id == S.pid ? "on" : ""}" onclick="go({pid:'${p.id}'})">${esc(p.name)}</button>`).join("")}</div>
+        ${cl.length > 3 ? `
+        <div class="search-input-wrap" style="margin:12px 0 16px;max-width:380px;position:relative">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Buscar turma ou professor..." value="${esc(_filtroCoordTurma)}" oninput="filtrarCoordTurmas(this.value)">
+        </div>` : ''}
+        <div class="list" id="coord_turmas_list">
+          ${cl.map(c => {
+            const st = classStatus(c.id, S.pid);
+            const normN = normStr(c.name);
+            const normP = normStr(c.prof || "");
+            const normL = normStr(lname(c.lid));
+            const isVis = !qTurma || normN.includes(qTurma) || normP.includes(qTurma) || normL.includes(qTurma);
+            if (isVis) visTurmas++;
+            return `<button class="item" data-name="${normN}" data-prof="${normP}" data-ano="${normL}" style="${isVis ? '' : 'display:none'}" onclick="abrir('${c.id}')">
+              <h4 style="margin:0 0 4px;font-size:1.15rem;font-weight:800;color:var(--navy)">${esc(c.name)}</h4>
+              <small style="display:block;color:var(--mut);margin-bottom:12px">${esc(c.prof || "Sem professor(a)")} · ${st.total} alunos</small>
+              <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+                ${st.status == "completa" ? `<span class="badge" style="margin:0">✓ ${st.filled}/${st.total} avaliados</span>` : st.status == "parcial" ? `<span class="badge w" style="margin:0">● ${st.filled}/${st.total} avaliados</span>` : `<span class="badge x" style="margin:0">${st.total ? "Pendente" : "Sem alunos"}</span>`}
+                <span class="badge" style="margin:0;background:var(--bg);color:var(--ink);border:1px solid var(--ln);font-weight:600">${esc(lname(c.lid))}</span>
+                ${c.shift ? `<span class="badge" style="margin:0;background:#F8FAFC;color:#475569;border:1px solid #E2E8F0;font-weight:600">${esc(c.shift)}</span>` : ""}
+              </div>
+            </button>`;
+          }).join("") || '<p class="empty">Nenhuma turma criada. Procure a Secretaria.</p>'}
+          <p id="coord_turmas_empty" class="empty" style="display:${visTurmas === 0 && cl.length > 0 ? 'block' : 'none'};width:100%">Nenhuma turma encontrada com esse termo.</p>
+        </div>`;
       }
-      return `<button class="crumb" onclick="go({cid:null})">← Voltar às turmas</button>` + lancar()
+      return `<button class="crumb" onclick="go({cid:null})">← Voltar às turmas</button>` + lancar();
     }
     
     

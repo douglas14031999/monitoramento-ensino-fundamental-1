@@ -1,7 +1,7 @@
-// DADOS REAIS â€” Monitoramento Ensino Fundamental I â€” SEMED Lagoa da Canoa
-// Gerado automaticamente de periodo_data_raw.json + correÃ§Ãµes manuais
-// Fonte: PDFs oficiais (Entrada.pdf, 1Â° Bimestre.pdf, 2Â° Bimestre.pdf)
-// NÃƒO EDITAR MANUALMENTE
+// DADOS REAIS — Monitoramento Ensino Fundamental I — SEMED Lagoa da Canoa
+// Gerado automaticamente de periodo_data_raw.json + correções manuais
+// Fonte: PDFs oficiais (Entrada.pdf, 1° Bimestre.pdf, 2° Bimestre.pdf)
+// NÃO EDITAR MANUALMENTE
 
 const DADOS_REAIS = {
   "years": [
@@ -36,79 +36,212 @@ const DADOS_REAIS = {
   "schools": [
     {
       "id": "e1",
-      "name": "ESCOLA DEP. MANOEL PEREIRA FILHO"
+      "name": "ESCOLA DEP. MANOEL PEREIRA FILHO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e2",
-      "name": "ESCOLA NOSSA SENHORA APARECIDA"
+      "name": "ESCOLA NOSSA SENHORA APARECIDA",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e3",
-      "name": "ESCOLA PRES. GARRASTAZU MÉDICI"
+      "name": "ESCOLA PRES. GARRASTAZU MÉDICI",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e4",
-      "name": "ESCOLA DEP. JOSÉ LÚCIO DE MELO"
+      "name": "ESCOLA DEP. JOSÉ LÚCIO DE MELO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e5",
-      "name": "ESCOLA VER. JOSÉ BEZERRA LEITE"
+      "name": "ESCOLA VER. JOSÉ BEZERRA LEITE",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e6",
-      "name": "ESCOLA JOÃO ANGELINO DOS SANTOS"
+      "name": "ESCOLA JOÃO ANGELINO DOS SANTOS",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e7",
-      "name": "ESCOLA JOSÉ BERNARDES NETO"
+      "name": "ESCOLA JOSÉ BERNARDES NETO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e8",
-      "name": "ESCOLA PROF. MURILO ROCHA MENDES"
+      "name": "ESCOLA PROF. MURILO ROCHA MENDES",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e9",
-      "name": "ESCOLA ULISSES LOPES DE OLIVEIRA"
+      "name": "ESCOLA ULISSES LOPES DE OLIVEIRA",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e10",
-      "name": "ESCOLA FUND. HERMETO PASCOAL"
+      "name": "ESCOLA FUND. HERMETO PASCOAL",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e11",
-      "name": "ESCOLA LUIZ EUSTÁQUIO TOLEDO"
+      "name": "ESCOLA LUIZ EUSTÁQUIO TOLEDO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e12",
-      "name": "ESCOLA PROF. JOSÉ MOACIR TEÓFILO"
+      "name": "ESCOLA PROF. JOSÉ MOACIR TEÓFILO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e13",
-      "name": "ESCOLA DEP. JOSÉ MARQUES DA SILVA"
+      "name": "ESCOLA DEP. JOSÉ MARQUES DA SILVA",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e14",
-      "name": "ESCOLA DOM PEDRO I"
+      "name": "ESCOLA DOM PEDRO I",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e15",
-      "name": "ESCOLA DOM PEDRO II"
+      "name": "ESCOLA DOM PEDRO II",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e16",
-      "name": "ESCOLA GOV. DIVALDO SURUAGY"
+      "name": "ESCOLA GOV. DIVALDO SURUAGY",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e17",
-      "name": "ESCOLA JOSÉ FRANCISCO DE BRITO"
+      "name": "ESCOLA JOSÉ FRANCISCO DE BRITO",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e18",
-      "name": "ESCOLA JOSÉ JOVINO DA SILVA"
+      "name": "ESCOLA JOSÉ JOVINO DA SILVA",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     },
     {
       "id": "e19",
-      "name": "ESCOLA JOSÉ ROCHA DOS SANTOS"
+      "name": "ESCOLA JOSÉ ROCHA DOS SANTOS",
+      "lids": [
+        "l1",
+        "l2",
+        "l3",
+        "l4",
+        "l5"
+      ]
     }
   ],
   "classes": [
