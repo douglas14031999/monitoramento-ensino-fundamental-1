@@ -2593,7 +2593,7 @@
     </header>
     <div class="wrap" id="view"></div>
   </section>
-  <script src="dados_reais.js?v=busca1"></script>
+  <script src="dados_reais.js?v=busca2"></script>
   <script>
     /* ===== CONFIGURAÇÃO: cole aqui a URL do App da Web (termina em /exec) ===== */
     const API_URL = "https://script.google.com/macros/s/AKfycbxXJGcXCvjIq1S9Ac801VFfwBNk-uFu_ck5Wgr3SEXmXtKRrAheWj6dj9sjEywLG_-k/exec";
@@ -3518,39 +3518,15 @@
     const cancelBtn = `<button class="ghost" style="margin-left:8px" onclick="go({ed:null})">Cancelar</button>`;
 
     let _filtroTurmaTexto = "";
-    let _filtroTurmaEscola = "";
-    let _filtroTurmaAno = "";
-    let _filtroTurmaTurno = "";
 
     function filtrarTurmasTexto(txt) {
       _filtroTurmaTexto = (txt || "").trim();
       aplicarFiltrosTurmas();
     }
-    function filtrarTurmasEscola(sid) {
-      _filtroTurmaEscola = sid || "";
-      aplicarFiltrosTurmas();
-    }
-    function filtrarTurmasAno(lid) {
-      _filtroTurmaAno = lid || "";
-      aplicarFiltrosTurmas();
-    }
-    function filtrarTurmasTurno(t) {
-      _filtroTurmaTurno = t || "";
-      aplicarFiltrosTurmas();
-    }
     function limparFiltrosTurmas() {
       _filtroTurmaTexto = "";
-      _filtroTurmaEscola = "";
-      _filtroTurmaAno = "";
-      _filtroTurmaTurno = "";
       const inp = document.getElementById("filtro_turma_busca");
       if (inp) inp.value = "";
-      const se = document.getElementById("filtro_turma_escola");
-      if (se) se.value = "";
-      const sa = document.getElementById("filtro_turma_ano");
-      if (sa) sa.value = "";
-      const st = document.getElementById("filtro_turma_turno");
-      if (st) st.value = "";
       aplicarFiltrosTurmas();
     }
 
@@ -3562,16 +3538,8 @@
         const name = r.dataset.name || "";
         const prof = r.dataset.prof || "";
         const escola = r.dataset.escola || "";
-        const sid = r.dataset.sid || "";
-        const lid = r.dataset.lid || "";
-        const shift = r.dataset.shift || "";
 
-        const matchTxt = !q || name.includes(q) || prof.includes(q) || escola.includes(q);
-        const matchEscola = !_filtroTurmaEscola || sid === _filtroTurmaEscola;
-        const matchAno = !_filtroTurmaAno || lid === _filtroTurmaAno;
-        const matchTurno = !_filtroTurmaTurno || shift === _filtroTurmaTurno;
-
-        const show = matchTxt && matchEscola && matchAno && matchTurno;
+        const show = !q || name.includes(q) || prof.includes(q) || escola.includes(q);
         r.style.display = show ? "" : "none";
         if (show) vis++;
       });
@@ -3580,13 +3548,12 @@
       const vazio = document.getElementById("turmas_empty_filter");
       if (vazio) vazio.style.display = (vis === 0 && rows.length > 0) ? "" : "none";
       const btnL = document.getElementById("btn_limpar_turmas");
-      if (btnL) btnL.style.display = (_filtroTurmaTexto || _filtroTurmaEscola || _filtroTurmaAno || _filtroTurmaTurno) ? "inline-flex" : "none";
+      if (btnL) btnL.style.display = _filtroTurmaTexto ? "inline-flex" : "none";
     }
 
     function aTurmas() {
       const e = S.ed && cls(S.ed), sid = e ? e.sid : D.schools[0]?.id;
       const allTurmas = yCl(yr());
-      const hasFilter = !!(_filtroTurmaTexto || _filtroTurmaEscola || _filtroTurmaAno || _filtroTurmaTurno);
       const qTurma = normStr(_filtroTurmaTexto);
       let visTurmas = 0;
 
@@ -3601,31 +3568,14 @@
           </span>
         </div>
         <div class="table-toolbar" style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:1 1 280px">
-            <div class="search-input-wrap" style="flex:1 1 240px;position:relative">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
-              </svg>
-              <input type="text" id="filtro_turma_busca" placeholder="Buscar por turma, professor ou escola..." value="${esc(_filtroTurmaTexto)}" oninput="filtrarTurmasTexto(this.value)">
-            </div>
+          <div class="search-input-wrap" style="flex:1 1 320px;max-width:500px;position:relative">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path stroke-linecap="round" d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="filtro_turma_busca" placeholder="Buscar por turma, professor ou escola..." value="${esc(_filtroTurmaTexto)}" oninput="filtrarTurmasTexto(this.value)">
           </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <select id="filtro_turma_escola" onchange="filtrarTurmasEscola(this.value)" class="toolbar-select" style="max-width:210px">
-              <option value="">Todas as escolas (${D.schools.length})</option>
-              ${D.schools.map(s => `<option value="${s.id}" ${_filtroTurmaEscola === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}
-            </select>
-            <select id="filtro_turma_ano" onchange="filtrarTurmasAno(this.value)" class="toolbar-select">
-              <option value="">Todos os anos</option>
-              <option value="multi" ${_filtroTurmaAno === "multi" ? "selected" : ""}>Multiano</option>
-              ${D.levels.map(l => `<option value="${l.id}" ${_filtroTurmaAno === l.id ? "selected" : ""}>${esc(l.name)}</option>`).join("")}
-            </select>
-            <select id="filtro_turma_turno" onchange="filtrarTurmasTurno(this.value)" class="toolbar-select">
-              <option value="">Todos os turnos</option>
-              ${TURNOS.map(t => `<option value="${t}" ${_filtroTurmaTurno === t ? "selected" : ""}>${t}</option>`).join("")}
-            </select>
-            <button id="btn_limpar_turmas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${hasFilter ? 'inline-flex' : 'none'}" onclick="limparFiltrosTurmas()">Limpar filtros</button>
-          </div>
+          <button id="btn_limpar_turmas" class="ghost" style="height:38px;padding:0 12px;font-size:.8rem;color:var(--p);display:${_filtroTurmaTexto ? 'inline-flex' : 'none'}" onclick="limparFiltrosTurmas()">Limpar busca</button>
         </div>
       `;
 
@@ -3650,13 +3600,9 @@
                   const normN = normStr(c.name);
                   const normP = normStr(c.prof || "");
                   const normE = normStr(sName);
-                  const matchTxt = !qTurma || normN.includes(qTurma) || normP.includes(qTurma) || normE.includes(qTurma);
-                  const matchEscola = !_filtroTurmaEscola || c.sid === _filtroTurmaEscola;
-                  const matchAno = !_filtroTurmaAno || c.lid === _filtroTurmaAno;
-                  const matchTurno = !_filtroTurmaTurno || c.shift === _filtroTurmaTurno;
-                  const isVisible = matchTxt && matchEscola && matchAno && matchTurno;
+                  const isVisible = !qTurma || normN.includes(qTurma) || normP.includes(qTurma) || normE.includes(qTurma);
                   if (isVisible) visTurmas++;
-                  return `<tr class="turma-row" ${S.ed == c.id ? 'style="background:var(--gs)"' : (!isVisible ? 'style="display:none"' : '')} data-name="${normN}" data-prof="${normP}" data-escola="${normE}" data-sid="${c.sid || ''}" data-lid="${c.lid || ''}" data-shift="${c.shift || ''}">
+                  return `<tr class="turma-row" ${S.ed == c.id ? 'style="background:var(--gs)"' : (!isVisible ? 'style="display:none"' : '')} data-name="${normN}" data-prof="${normP}" data-escola="${normE}">
                     <td>${esc(sName)}</td>
                     <td><b>${esc(c.name)}</b></td>
                     <td>${esc(lName)}</td>
@@ -3669,8 +3615,8 @@
                 <tr id="turmas_empty_filter" style="display:${visTurmas === 0 && allTurmas.length > 0 ? '' : 'none'}">
                   <td colspan="7" style="text-align:center;padding:36px 16px;color:var(--mut)">
                     <div style="font-size:1.05rem;font-weight:700;margin-bottom:4px;color:var(--navy)">Nenhuma turma encontrada</div>
-                    <div style="font-size:.84rem;color:var(--mut);margin-bottom:12px">Nenhuma turma corresponde aos filtros ou busca informados.</div>
-                    <button class="ghost" style="height:32px;padding:0 14px;font-size:.8rem" onclick="limparFiltrosTurmas()">Limpar filtros</button>
+                    <div style="font-size:.84rem;color:var(--mut);margin-bottom:12px">Nenhuma turma corresponde à busca informada.</div>
+                    <button class="ghost" style="height:32px;padding:0 14px;font-size:.8rem" onclick="limparFiltrosTurmas()">Limpar busca</button>
                   </td>
                 </tr>
               </tbody>
